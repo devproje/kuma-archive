@@ -6,10 +6,11 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
+		"build-server": "go build -o kuma-archive",
+		"build:all": "bun run build && bun run build-server",
+		"dev:all": "bun run build && go run ./app.go daemon -d",
 		"lint": "eslint .",
-		"preview": "vite preview",
-		"dev:server": "go run ./cmd/app.go daemon -d",
-		"build:server": "go build -o kuma-archive"
+		"preview": "vite preview"
 	},
 	"dependencies": {
 		"react": "^19.0.0",

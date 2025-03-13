@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"git.wh64.net/devproje/kuma-archive/config"
 	"git.wh64.net/devproje/kuma-archive/internal/routes"
 	"github.com/devproje/commando"
 	"github.com/devproje/commando/option"
@@ -13,6 +14,8 @@ import (
 
 func main() {
 	command := commando.NewCommando(os.Args[1:])
+	cnf := config.Get()
+
 	command.Root("daemon", "run file server", func(n *commando.Node) error {
 		debug, err := option.ParseBool(*n.MustGetOpt("debug"), n)
 		if err != nil {
@@ -26,7 +29,7 @@ func main() {
 		gin := gin.Default()
 		routes.New(gin)
 
-		if err := gin.Run(); err != nil {
+		if err := gin.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
 			return err
 		}
 

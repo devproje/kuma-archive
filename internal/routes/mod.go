@@ -17,7 +17,7 @@ func New(app *gin.Engine) {
 	app.Use(static.Serve("/assets", static.LocalFile("./assets", false)))
 
 	app.NoRoute(func(ctx *gin.Context) {
-		ctx.HTML(200, "index.html", nil)
+		ctx.File("./public/index.html")
 	})
 
 	app.GET("favicon.ico", func(ctx *gin.Context) {
@@ -52,8 +52,10 @@ func New(app *gin.Engine) {
 
 			entries := make([]service.DirEntry, 0)
 			for _, fd := range entry {
+				var info, _ = fd.Info()
 				entries = append(entries, service.DirEntry{
-					Name: fd.Name(),
+					Name:     fd.Name(),
+					FileSize: uint64(info.Size()),
 				})
 			}
 

@@ -10,7 +10,8 @@ import (
 type WorkerService struct{}
 
 type DirEntry struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	FileSize uint64 `json:"file_size"`
 }
 
 func NewWorkerService() *WorkerService {

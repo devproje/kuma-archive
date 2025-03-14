@@ -3,10 +3,7 @@ package routes
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
-	"git.wh64.net/devproje/kuma-archive/config"
 	"git.wh64.net/devproje/kuma-archive/internal/service"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -37,25 +34,30 @@ func New(app *gin.Engine) {
 				return
 			}
 
-			if !info.IsDir() {
-				var split = strings.Split(path, "/")
-				ctx.FileAttachment(filepath.Join(config.INDEX_DIR, path), split[len(split)-1])
-
+			if !info.IsDir {
+				ctx.FileAttachment(info.FullPath, info.Name)
 				return
 			}
 
-			entry, err := os.ReadDir(filepath.Join(config.INDEX_DIR, path))
+			raw, err := os.ReadDir(info.FullPath)
 			if err != nil {
 				ctx.Status(500)
 				return
 			}
 
 			entries := make([]service.DirEntry, 0)
-			for _, fd := range entry {
-				var info, _ = fd.Info()
+			for _, entry := range raw {
+				finfo, err := entry.Info()
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", err)
+					continue
+				}
+
 				entries = append(entries, service.DirEntry{
-					Name:     fd.Name(),
-					FileSize: uint64(info.Size()),
+					Name:     entry.Name(),
+					FileSize: uint64(finfo.Size()),
+					FullPath: path,
+					IsDir:    finfo.IsDir(),
 				})
 			}
 

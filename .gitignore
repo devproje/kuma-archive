@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-public/
+web/
 ka_data/
 kuma-archive

@@ -22,12 +22,17 @@ func main() {
 			return err
 		}
 
+		apiOnly, err := option.ParseBool(*n.MustGetOpt("api-only"), n)
+		if err != nil {
+			return err
+		}
+
 		if !debug {
 			gin.SetMode(gin.ReleaseMode)
 		}
 
 		gin := gin.Default()
-		routes.New(gin)
+		routes.New(gin, apiOnly)
 
 		if err := gin.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
 			return err
@@ -39,6 +44,10 @@ func main() {
 		Desc:  "service debugging mode",
 		Short: []string{"d"},
 		Type:  types.BOOLEAN,
+	}, types.OptionData{
+		Name: "api-only",
+		Desc: "no serve frontend service",
+		Type: types.BOOLEAN,
 	})
 
 	if err := command.Execute(); err != nil {

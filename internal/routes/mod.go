@@ -9,37 +9,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(app *gin.Engine) {
-	app.Use(static.Serve("/", static.LocalFile("./public", true)))
-	app.Use(static.Serve("/assets", static.LocalFile("./assets", false)))
-
-	app.NoRoute(func(ctx *gin.Context) {
-		ctx.File("./public/index.html")
-	})
-
-	app.GET("favicon.ico", func(ctx *gin.Context) {
-		ctx.File("/assets/favicon.ico")
-	})
-
+func New(app *gin.Engine, apiOnly bool) {
 	api := app.Group("/api")
 	{
 		api.GET("/path/*path", func(ctx *gin.Context) {
 			worker := service.NewWorkerService()
 
 			path := ctx.Param("path")
-			info, err := worker.Read(path)
+			data, err := worker.Read(path)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
 				ctx.Status(404)
 				return
 			}
 
-			if !info.IsDir {
-				ctx.FileAttachment(info.FullPath, info.Name)
+			if !data.IsDir {
+				ctx.FileAttachment(data.Path, data.Name)
 				return
 			}
 
-			raw, err := os.ReadDir(info.FullPath)
+			raw, err := os.ReadDir(data.Path)
 			if err != nil {
 				ctx.Status(500)
 				return
@@ -55,8 +44,8 @@ func New(app *gin.Engine) {
 
 				entries = append(entries, service.DirEntry{
 					Name:     entry.Name(),
+					Path:     path,
 					FileSize: uint64(finfo.Size()),
-					FullPath: path,
 					IsDir:    finfo.IsDir(),
 				})
 			}
@@ -68,4 +57,20 @@ func New(app *gin.Engine) {
 			})
 		})
 	}
+
+	if apiOnly {
+		return
+	}
+
+	app.Use(static.Serve("/", static.LocalFile("./web", true)))
+	app.Use(static.Serve("/assets", static.LocalFile("./assets", false)))
+
+	app.NoRoute(func(ctx *gin.Context) {
+		ctx.File("./web/index.html")
+	})
+
+	app.GET("favicon.ico", func(ctx *gin.Context) {
+		ctx.File("/web/assets/favicon.ico")
+	})
+
 }

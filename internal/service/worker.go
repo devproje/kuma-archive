@@ -11,7 +11,7 @@ type WorkerService struct{}
 
 type DirEntry struct {
 	Name     string `json:"name"`
-	FullPath string `json:"path"`
+	Path     string `json:"path"`
 	FileSize uint64 `json:"file_size"`
 	IsDir    bool   `json:"is_dir"`
 }
@@ -29,7 +29,7 @@ func (sv *WorkerService) Read(path string) (*DirEntry, error) {
 
 	ret := DirEntry{
 		Name:     info.Name(),
-		FullPath: fullpath,
+		Path:     fullpath,
 		FileSize: uint64(info.Size()),
 	}
 	return &ret, nil

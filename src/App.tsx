@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import "./App.scss";
 import Dashboard from "./components/dashboard";
+
+import "./App.scss";
 
 function App() {
 	return (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Directory from "./components/directory";
 import { DirEntry, usePath } from "./store/path";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import { DynamicIcon } from "lucide-react/dynamic";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 
 import "./App.scss";

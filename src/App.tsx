@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import "./App.scss";
 import kuma from "./assets/kuma.png";
-import { Menu } from "lucide-react";
+import { Menu, PanelLeftClose } from "lucide-react";
 
 function App() {
 	return (
@@ -42,17 +42,38 @@ function Dashboard() {
 }
 
 function Header() {
+	const [open, setOpen] = useState(false);
+
 	return (
 		<nav className="ka-nav">
-			<div className="title">
+			<a className="title">
 				<img src={kuma} alt="" />
 				<h4 className="title-content">Kuma Archive</h4>
-			</div>
+			</a>
 
-			<button>
+			<a onClick={ev => {
+				ev.preventDefault();
+				setOpen(!open);
+			}}>
 				<Menu />
-			</button>
+			</a>
+			<MenuView open={open} setOpen={setOpen} />
 		</nav>
+	);
+}
+
+// TODO: create menu modal
+function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+	return (
+		<div className={`ka-menu ${open ? "open" : ""}`}>
+			<a onClick={ev => {
+				ev.preventDefault();
+				setOpen(false);
+			}}>
+				<PanelLeftClose />
+				<span>Close</span>
+			</a>
+		</div>
 	);
 }
 

@@ -26,3 +26,22 @@
 		}
 	}
 }
+
+.ka-menu {
+	top: 0;
+	left: 0;
+	width: 300px;
+	height: 100%;
+	position: fixed;
+	transform: translateX(-100%);
+	background-color: var(--nav-color);
+	transition: transform 0.3s ease-in-out;
+
+	&.open {
+		transform: translateX(0);
+	}
+
+	@media (max-width: 640px) {
+		width: 100%;
+	}
+}

@@ -4,17 +4,18 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"dev:server": "go run ./app.go daemon -d --api-only",
-		"dev:all": "bun run build && go run ./app.go daemon -d",
-		"build": "tsc -b && vite build",
+		"build:view": "tsc -b && vite build",
 		"build:server": "go build -o kuma-archive",
-		"build:all": "bun run build && bun run build-server",
+		"build": "bun run build:view && bun run build:server",
+		"dev:view": "vite",
+		"dev:server": "go run ./app.go daemon -d --api-only",
+		"dev": "bun run build:view && go run ./app.go daemon -d",
 		"lint": "eslint .",
 		"preview": "vite preview"
 	},
 	"dependencies": {
 		"bootstrap": "^5.3.3",
+		"lucide-react": "^0.482.0",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-router": "^7.3.0",

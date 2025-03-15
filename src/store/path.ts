@@ -1,19 +1,24 @@
 import { create } from "zustand";
 
 interface PathState {
-	data: PathResponse | string | undefined;
+	data: PathResponse | undefined;
 	update(path: string): Promise<void>;
 }
 
 interface PathResponse {
 	ok: number;
 	path: string;
+	total: number;
+	is_dir: boolean;
 	entries: Array<DirEntry>
 }
 
 export interface DirEntry {
 	name: string;
+	path: string;
+	date: number;
 	file_size: number;
+	is_dir: boolean;
 }
 
 export const usePath = create<PathState>((set) => ({
@@ -25,10 +30,6 @@ export const usePath = create<PathState>((set) => ({
 			return;
 		}
 
-		try {
-			set({ data: await res.json() });
-		} catch {
-			set({ data: `/api/path/${path}` });
-		}
+		set({ data: await res.json() });
 	}
 }));

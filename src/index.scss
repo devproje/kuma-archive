@@ -1,4 +1,5 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
 	--background: #242424;
@@ -31,6 +32,7 @@
 	--btn-danger-focus: #a72532;
 
 	--font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+	--font-mono: "JetBrains Mono", monospace;
 }
 
 html, body {
@@ -183,4 +185,8 @@ input, button {
 	font-size: 12pt;
 	border-radius: 25px;
 	padding: 0.25rem 15px;
+}
+
+code, pre {
+	font-family: var(--font-mono);
 }

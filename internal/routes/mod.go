@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"git.wh64.net/devproje/kuma-archive/internal/service"
 	"github.com/gin-contrib/static"
@@ -14,22 +15,28 @@ func New(app *gin.Engine, apiOnly bool) {
 	{
 		api.GET("/path/*path", func(ctx *gin.Context) {
 			worker := service.NewWorkerService()
-
 			path := ctx.Param("path")
 			data, err := worker.Read(path)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
+				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 				ctx.Status(404)
 				return
 			}
 
 			if !data.IsDir {
-				ctx.FileAttachment(data.Path, data.Name)
+				ctx.JSON(200, gin.H{
+					"ok":      1,
+					"path":    path,
+					"total":   data.FileSize,
+					"is_dir":  false,
+					"entries": nil,
+				})
 				return
 			}
 
 			raw, err := os.ReadDir(data.Path)
 			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 				ctx.Status(500)
 				return
 			}
@@ -44,7 +51,8 @@ func New(app *gin.Engine, apiOnly bool) {
 
 				entries = append(entries, service.DirEntry{
 					Name:     entry.Name(),
-					Path:     path,
+					Path:     filepath.Join(path, entry.Name()),
+					Date:     finfo.ModTime().Unix(),
 					FileSize: uint64(finfo.Size()),
 					IsDir:    finfo.IsDir(),
 				})
@@ -53,8 +61,46 @@ func New(app *gin.Engine, apiOnly bool) {
 			ctx.JSON(200, gin.H{
 				"ok":      1,
 				"path":    path,
+				"total":   data.FileSize,
+				"is_dir":  true,
 				"entries": entries,
 			})
+		})
+
+		api.GET("/raw/*path", func(ctx *gin.Context) {
+			worker := service.NewWorkerService()
+			path := ctx.Param("path")
+			data, err := worker.Read(path)
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+				ctx.Status(404)
+				return
+			}
+
+			if data.IsDir {
+				ctx.String(400, "current path is not file")
+				return
+			}
+
+			ctx.File(data.Path)
+		})
+
+		api.GET("/download/*path", func(ctx *gin.Context) {
+			worker := service.NewWorkerService()
+			path := ctx.Param("path")
+			data, err := worker.Read(path)
+			if err != nil {
+				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+				ctx.Status(404)
+				return
+			}
+
+			if data.IsDir {
+				ctx.String(400, "current path is not file")
+				return
+			}
+
+			ctx.FileAttachment(data.Path, data.Name)
 		})
 	}
 

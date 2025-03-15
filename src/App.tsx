@@ -62,7 +62,7 @@ function Dashboard() {
 }
 
 function Header() {
-	const [open, setOpen] = useState(false);
+	// const [open, setOpen] = useState(false);
 
 	return (
 		<nav className="ka-nav">
@@ -73,40 +73,41 @@ function Header() {
 
 			<a onClick={ev => {
 				ev.preventDefault();
-				setOpen(!open);
+				console.log("not provide features");
+				// setOpen(!open);
 			}}>
 				<DynamicIcon className="link" name="more-vertical" />
 			</a>
-			<MenuView open={open} setOpen={setOpen} />
+			{/* <MenuView open={open} setOpen={setOpen} /> */}
 		</nav>
 	);
 }
 
 // TODO: create menu modal
-function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
-	return (
-		<div className={`ka-menu ${open ? "open" : ""}`}>
-			<MenuItem icon="panel-left-close" name="Close" block={() => {
-				setOpen(false);
-			}} />
-		</div>
-	);
-}
+// function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+// 	return (
+// 		<div className={`ka-menu ${open ? "open" : ""}`}>
+// 			<MenuItem icon="panel-left-close" name="Close" block={() => {
+// 				setOpen(false);
+// 			}} />
+// 		</div>
+// 	);
+// }
 
-function MenuItem({ icon, name, block }: { icon: IconName, name: string, block?: () => void }) {
-	return (
-		<a className={"ka-menu-item link"} onClick={ev => {
-			ev.preventDefault();
-			if (typeof block === "undefined")
-				return;
+// function MenuItem({ icon, name, block }: { icon: IconName, name: string, block?: () => void }) {
+// 	return (
+// 		<a className={"ka-menu-item link"} onClick={ev => {
+// 			ev.preventDefault();
+// 			if (typeof block === "undefined")
+// 				return;
 
-			block();
-		}}>
-			<DynamicIcon name={icon} />
-			<span>{name}</span>
-		</a>
-	);
-}
+// 			block();
+// 		}}>
+// 			<DynamicIcon name={icon} />
+// 			<span>{name}</span>
+// 		</a>
+// 	);
+// }
 
 function Footer() {
 	const path = usePath();

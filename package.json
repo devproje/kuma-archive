@@ -10,6 +10,7 @@
 		"dev:view": "vite",
 		"dev:server": "go run ./app.go daemon -d --api-only",
 		"dev": "bun run build:view && go run ./app.go daemon -d",
+		"package": "sh ./scripts/package.sh",
 		"lint": "eslint .",
 		"preview": "vite preview"
 	},

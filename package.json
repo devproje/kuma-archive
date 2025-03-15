@@ -1,7 +1,7 @@
 {
 	"name": "kuma-archive",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.1.0-alpha.1",
 	"type": "module",
 	"scripts": {
 		"build:view": "tsc -b && vite build",

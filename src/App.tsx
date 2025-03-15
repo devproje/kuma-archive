@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import "./App.scss";
 import kuma from "./assets/kuma.png";
-import { Menu, PanelLeftClose } from "lucide-react";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 function App() {
 	return (
@@ -26,7 +26,7 @@ function Dashboard() {
 			path.update(location.pathname.substring(1, location.pathname.length));
 				setLoad(true);
 			}
-	
+
 			const id = setInterval(() => {
 				path.update(location.pathname.substring(1, location.pathname.length));
 			}, 5000);
@@ -55,7 +55,7 @@ function Header() {
 				ev.preventDefault();
 				setOpen(!open);
 			}}>
-				<Menu />
+				<DynamicIcon className="link" name="more-vertical" />
 			</a>
 			<MenuView open={open} setOpen={setOpen} />
 		</nav>
@@ -66,14 +66,26 @@ function Header() {
 function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
 	return (
 		<div className={`ka-menu ${open ? "open" : ""}`}>
-			<a onClick={ev => {
-				ev.preventDefault();
+			<MenuItem icon="panel-left-close" name="Close" block={() => {
 				setOpen(false);
-			}}>
-				<PanelLeftClose />
-				<span>Close</span>
-			</a>
+			}} />
 		</div>
+	);
+}
+
+function MenuItem({ icon, name, block }: { icon: IconName, name: string, block?: () => void }) {
+	return (
+		<a className={"ka-menu-item link"} onClick={ev => {
+			ev.preventDefault();
+
+			if (typeof block === "undefined")
+				return;
+
+			block();
+		}}>
+			<DynamicIcon name={icon} className="link" />
+			<span>{name}</span>
+		</a>
 	);
 }
 

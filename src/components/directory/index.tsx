@@ -3,35 +3,45 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { DirEntry, usePath } from "../../store/path";
 
 import "./directory.scss";
+import Markdown from "react-markdown";
+import { Suspense, useEffect, useState } from "react";
+import { useLocation } from "react-router";
 
 function Directory() {
 	const path = usePath();
+
 	if (typeof path.data === "undefined")
 		return <></>;
 
 	return (
-		<div className="ka-dir">
-			<div className="ka-dir-row ka-dir-top">
-				<div className="ka-dir-item"></div>
-				<b className="ka-dir-item">Name</b>
-				<b className="ka-dir-item">Size</b>
-				<b className="ka-dir-item">Date</b>
+		<>
+			<div className="ka-dir">
+				<div className="ka-dir-row ka-dir-top">
+					<div className="ka-dir-item"></div>
+					<b className="ka-dir-item">Name</b>
+					<b className="ka-dir-item">Size</b>
+					<b className="ka-dir-item">Date</b>
+				</div>
+
+				{path.data.path === "/" ? <></> : (
+					<DirItem data={{
+						name: "../",
+						path: path.data.path.endsWith("/") ? path.data.path += ".." : path.data.path += "/..",
+						date: -1,
+						file_size: -1,
+						is_dir: true,
+					}} />
+				)}
+
+				{path.data.entries.map((entry, key) => {
+					return <DirItem data={entry} key={key} />;
+				})}
 			</div>
 
-			{path.data.path === "/" ? <></> : (
-				<DirItem data={{
-					name: "../",
-					path: path.data.path.endsWith("/") ? path.data.path += ".." : path.data.path += "/..",
-					date: -1,
-					file_size: -1,
-					is_dir: true,
-				}} />
-			)}
-
-			{path.data.entries.map((entry, key) => {
-				return <DirItem data={entry} key={key} />;
-			})}
-		</div>
+			<Suspense fallback={<></>}>
+				<Readme />
+			</Suspense>
+		</>
 	);
 }
 
@@ -63,6 +73,39 @@ function DirItem({ data }: { data: DirEntry }) {
 				}).replace(/,/g, "")}
 			</span>
 		</div>
+	);
+}
+
+function Readme() {
+	const location = useLocation();
+	const [load, setLoad] = useState(false);
+	const [readme, setReadme] = useState<string>("");
+
+	useEffect(() => {
+		async function refresh() {
+			const pathname = location.pathname;
+			const res = await fetch(`/api/raw/${pathname}${pathname.endsWith("/") ? "" : "/"}README.md`);
+			if (res.status !== 200)
+				return;
+
+			setReadme(await res.text());
+		}
+
+		if (!load) {
+			refresh().then(() => {
+				setLoad(true);
+			});
+		}
+	}, [load, location, setLoad, setReadme]);
+
+	return (
+		<>
+			{load && readme !== "" ? (
+				<div className="ka-readme">
+					<Markdown>{readme}</Markdown>
+				</div>
+			) : <></>}
+		</>
 	);
 }
 

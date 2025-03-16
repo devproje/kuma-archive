@@ -15,12 +15,6 @@ function FileView() {
 			setLoad(true);
 			return;
 		}
-
-		const id = setInterval(() => {
-			raw.update(location.pathname.substring(1, location.pathname.length));
-		}, 5000);
-
-		return () => clearInterval(id);
 	}, [raw, location, load]);
 
 	return (
@@ -33,6 +27,9 @@ function FileView() {
 					<span>{location.pathname}</span>
 				</div>
 				<div className="action-row">
+					<a className="btn link" href={`/api/raw${location.pathname}`}>
+						<DynamicIcon name="file" />
+					</a>
 					<a className="btn link" onClick={ev => {
 						ev.preventDefault();
 						fetch(`/api/download${location.pathname}`)

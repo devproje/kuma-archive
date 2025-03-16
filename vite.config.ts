@@ -5,6 +5,14 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
 	plugins: [react()],
 	build: {
-		outDir: "web/"
+		outDir: "web/",
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					react: ["react", "react-dom"],
+					vendor: ["react-markdown"]
+				}
+			}
+		}
 	}
 });

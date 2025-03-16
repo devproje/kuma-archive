@@ -25,17 +25,12 @@ function Dashboard() {
 
 	useEffect(() => {
 		if (!load) {
-			path.update(location.pathname.substring(1, location.pathname.length));
-			setLoad(true);
+			path.update(location.pathname.substring(1, location.pathname.length)).then(() => {
+				setLoad(true);
+			});
 
 			return;
 		}
-
-		const id = setInterval(() => {
-			path.update(location.pathname.substring(1, location.pathname.length));
-		}, 5000);
-	
-		return () => clearInterval(id);
 	}, [load, path, location]);
 
 	if (!load) {

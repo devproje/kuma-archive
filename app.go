@@ -34,6 +34,7 @@ func main() {
 		gin := gin.Default()
 		routes.New(gin, apiOnly)
 
+		fmt.Fprintf(os.Stdout, "binding server at: http://0.0.0.0:%d\n", cnf.Port)
 		if err := gin.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
 			return err
 		}

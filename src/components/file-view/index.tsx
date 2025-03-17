@@ -24,7 +24,7 @@ function FileView() {
 					<a className="link" href={location.pathname.endsWith("/") ? location.pathname + ".." : location.pathname + "/.."}>
 						<DynamicIcon name="chevron-left" size={21} />
 					</a>
-					<b>{location.pathname}</b>
+					<b>{decodeURIComponent(location.pathname)}</b>
 				</div>
 				<div className="action-row">
 					<a className="btn link" href={`/api/raw${location.pathname}`}>

@@ -16,7 +16,13 @@ export const useRaw = create<RawState>((set) => ({
 			return;
 		}
 
+		const contentType = res.headers.get("Content-Type");
+		if (!contentType || !contentType.includes("text")) {
+			set({ data: "this file is not supported showing preview" });
+			return;
+		}
+		
 		const text = await res.text();
-		set({ data: text });
+		set({ data: text });	
 	}
 }));

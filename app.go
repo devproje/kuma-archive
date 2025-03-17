@@ -12,7 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	hash    = "unknown"
+	version = "unknown"
+)
+
 func main() {
+	fmt.Printf("Kuma Archive %s-%s\n", version, hash)
 	command := commando.NewCommando(os.Args[1:])
 	cnf := config.Get()
 

@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"scripts": {
 		"build:view": "tsc -b && vite build",
-		"build:server": "go build -o kuma-archive",
+		"build:server": "go build -ldflags \"-X main.version=$(jq -r .version package.json) -X main.hash=$(git rev-parse --short=6 HEAD)\" -o kuma-archive",
 		"build": "bun run build:view && bun run build:server",
 		"dev:view": "vite",
 		"dev:server": "go run ./app.go daemon -d --api-only",

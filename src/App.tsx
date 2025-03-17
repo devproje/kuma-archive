@@ -57,7 +57,7 @@ function Dashboard() {
 }
 
 function Header() {
-	// const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
 
 	return (
 		<nav className="ka-nav">
@@ -68,26 +68,38 @@ function Header() {
 
 			<a onClick={ev => {
 				ev.preventDefault();
-				console.log("not provide features");
-				// setOpen(!open);
+				setOpen(!open);
 			}}>
 				<DynamicIcon className="link" name="more-vertical" />
 			</a>
-			{/* <MenuView open={open} setOpen={setOpen} /> */}
+			<MenuView open={open} setOpen={setOpen} />
 		</nav>
 	);
 }
 
-// TODO: create menu modal
-// function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
-// 	return (
-// 		<div className={`ka-menu ${open ? "open" : ""}`}>
-// 			<MenuItem icon="panel-left-close" name="Close" block={() => {
-// 				setOpen(false);
-// 			}} />
-// 		</div>
-// 	);
-// }
+function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+	return (
+		<div className={`ka-menu ${open ? "open" : ""}`}>
+			<div className="ka-menu-group"></div>
+			<div className="ka-menu-group">
+				<div className="ka-menu-footer">
+					<a className="btn link" href="https://git.wh64.net/devproje/kuma-archive">
+						<DynamicIcon name="git-fork" />
+					</a>
+					<a className="btn link" href="https://projecttl.net">
+						<DynamicIcon name="globe" />
+					</a>
+					<a className="btn link" onClick={ev => {
+						ev.preventDefault();
+						setOpen(false);
+					}}>
+						<DynamicIcon name="panel-left-close" />
+					</a>
+				</div>
+			</div>
+		</div>
+	);
+}
 
 // function MenuItem({ icon, name, block }: { icon: IconName, name: string, block?: () => void }) {
 // 	return (

@@ -32,6 +32,14 @@ function FileView() {
 					</a>
 					<a className="btn link" onClick={ev => {
 						ev.preventDefault();
+						navigator.clipboard.writeText(`${document.location.origin}/api/raw${location.pathname}`)
+							.then(() => alert("url copied to clipboard"))
+							.catch(err => console.error("Failed to copy text: ", err));
+					}}>
+						<DynamicIcon name="link" size={21} />
+					</a>
+					<a className="btn link" onClick={ev => {
+						ev.preventDefault();
 						fetch(`/api/download${location.pathname}`)
 							.then(response => response.blob())
 							.then(blob => {

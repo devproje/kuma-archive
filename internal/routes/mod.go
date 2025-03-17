@@ -5,12 +5,15 @@ import (
 	"os"
 	"path/filepath"
 
+	"git.wh64.net/devproje/kuma-archive/internal/middleware"
 	"git.wh64.net/devproje/kuma-archive/internal/service"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
 func New(app *gin.Engine, apiOnly bool) {
+	app.Use(middleware.CORS)
+
 	api := app.Group("/api")
 	{
 		api.GET("/path/*path", func(ctx *gin.Context) {

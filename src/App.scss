@@ -31,14 +31,21 @@
 	top: 0;
 	left: 0;
 	height: 100%;
+	display: flex;
 	position: fixed;
 	min-width: 300px;
+	flex-direction: column;
 	transform: translateX(-100%);
+	justify-content: space-between;
 	background-color: var(--nav-color);
 	transition: transform 0.3s ease-in-out;
 
 	&.open {
 		transform: translateX(0);
+	}
+	
+	.ka-menu-group {
+		width: 100%;
 	}
 
 	.ka-menu-item {
@@ -59,6 +66,14 @@
 		&:focus {
 			color: var(--focus);
 		}
+	}
+
+	.ka-menu-footer {
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+		padding: 1rem 1.5rem;
+		justify-content: space-between;
 	}
 
 	@media (max-width: 640px) {

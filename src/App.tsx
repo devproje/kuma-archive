@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useVersion } from "./store/version";
+import FileView from "./components/file-view";
 import Directory from "./components/directory";
 import { DirEntry, usePath } from "./store/path";
 import { DynamicIcon } from "lucide-react/dynamic";
@@ -6,7 +8,6 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 
 import "./App.scss";
 import kuma from "./assets/kuma.png";
-import FileView from "./components/file-view";
 
 function App() {
 	return (
@@ -57,8 +58,6 @@ function Dashboard() {
 }
 
 function Header() {
-	const [open, setOpen] = useState(false);
-
 	return (
 		<nav className="ka-nav">
 			<a className="title" href="/">
@@ -66,61 +65,26 @@ function Header() {
 				<h4 className="title-content">Kuma Archive</h4>
 			</a>
 
-			<a onClick={ev => {
-				ev.preventDefault();
-				setOpen(!open);
-			}}>
-				<DynamicIcon className="link" name="more-vertical" />
-			</a>
-			<MenuView open={open} setOpen={setOpen} />
+			<div className="action-row">
+				<a className="link" href="https://git.wh64.net/devproje/kuma-archive">
+					<DynamicIcon name="folder-git-2" size={15} />
+				</a>
+				<a className="link" href="https://projecttl.net">
+					<DynamicIcon name="globe" size={15} />
+				</a>
+			</div>
 		</nav>
 	);
 }
-
-function MenuView({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
-	return (
-		<div className={`ka-menu ${open ? "open" : ""}`}>
-			<div className="ka-menu-group"></div>
-			<div className="ka-menu-group">
-				<div className="ka-menu-footer">
-					<a className="btn link" href="https://git.wh64.net/devproje/kuma-archive">
-						<DynamicIcon name="git-fork" />
-					</a>
-					<a className="btn link" href="https://projecttl.net">
-						<DynamicIcon name="globe" />
-					</a>
-					<a className="btn link" onClick={ev => {
-						ev.preventDefault();
-						setOpen(false);
-					}}>
-						<DynamicIcon name="panel-left-close" />
-					</a>
-				</div>
-			</div>
-		</div>
-	);
-}
-
-// function MenuItem({ icon, name, block }: { icon: IconName, name: string, block?: () => void }) {
-// 	return (
-// 		<a className={"ka-menu-item link"} onClick={ev => {
-// 			ev.preventDefault();
-// 			if (typeof block === "undefined")
-// 				return;
-
-// 			block();
-// 		}}>
-// 			<DynamicIcon name={icon} />
-// 			<span>{name}</span>
-// 		</a>
-// 	);
-// }
 
 function Footer() {
 	const path = usePath();
 	let file = 0;
 	let dir = 0;
 
+	const version = useVersion();
+	const [load, setLoad] = useState(false);
+	
 	if (typeof path.data !== "undefined") {
 		if (path.data.is_dir) {
 			path.data.entries.forEach((entry: DirEntry) => {
@@ -133,6 +97,15 @@ function Footer() {
 		}
 	}
 
+	useEffect(() => {
+		if (!load) {
+			version.update().then(() => {
+				setLoad(true);
+			});
+			return;
+		}
+	}, [load, version]);
+
 	return (
 		<footer className="ka-footer">
 			{path.data ? path.data.is_dir ? (
@@ -142,12 +115,13 @@ function Footer() {
 			) : <></> : <></>}
 			
 			<div className="footer">
+				<span><b>Kuma Archive</b> {version.value}</span>
 				<p>
 					&copy; 2020-2025 <a href="https://git.wh64.net/devproje">Project_IO</a>. All rights reserved for images.
 					<br />
 					Code licensed under the <a href="https://git.wh64.net/devproje/kuma-archive/src/branch/master/LICENSE">MIT License</a>.
 				</p>
-				<span> Powered by WSERVER</span>
+				<span>Powered by WSERVER</span>
 			</div>
 		</footer>
 	);

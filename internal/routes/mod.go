@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func New(app *gin.Engine, apiOnly bool) {
+func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 	app.Use(middleware.CORS)
 
 	api := app.Group("/api")
@@ -104,6 +104,10 @@ func New(app *gin.Engine, apiOnly bool) {
 			}
 
 			ctx.FileAttachment(data.Path, data.Name)
+		})
+
+		api.GET("/version", func(ctx *gin.Context) {
+			ctx.String(200, "%s", version.String())
 		})
 	}
 

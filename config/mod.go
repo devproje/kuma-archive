@@ -13,7 +13,7 @@ type ConfigRef struct {
 
 var (
 	ROOT_DIRECTORY string
-	CONFIG_DIR     string
+	CONFIG_FILE    string
 	INDEX_DIR      string
 )
 
@@ -33,7 +33,7 @@ func init() {
 		_ = os.WriteFile(filepath.Join(ROOT_DIRECTORY, "config.json"), []byte(buf), 0644)
 	}
 
-	CONFIG_DIR = filepath.Join(ROOT_DIRECTORY, "config.json")
+	CONFIG_FILE = filepath.Join(ROOT_DIRECTORY, "config.json")
 
 	INDEX_DIR = filepath.Join(ROOT_DIRECTORY, "index")
 	if _, err := os.ReadDir(INDEX_DIR); err != nil {
@@ -42,7 +42,7 @@ func init() {
 }
 
 func Get() *ConfigRef {
-	buf, err := os.ReadFile(CONFIG_DIR)
+	buf, err := os.ReadFile(CONFIG_FILE)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return nil

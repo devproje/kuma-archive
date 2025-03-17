@@ -25,59 +25,15 @@
 			margin: 0 0.5rem;
 		}
 	}
-}
 
-.ka-menu {
-	top: 0;
-	left: 0;
-	height: 100%;
-	display: flex;
-	position: fixed;
-	min-width: 300px;
-	flex-direction: column;
-	transform: translateX(-100%);
-	justify-content: space-between;
-	background-color: var(--nav-color);
-	transition: transform 0.3s ease-in-out;
-
-	&.open {
-		transform: translateX(0);
-	}
-	
-	.ka-menu-group {
-		width: 100%;
-	}
-
-	.ka-menu-item {
-		width: 100%;
-		height: 45px;
-		display: flex;
-		padding: 0 0.5rem;
-		align-items: center;
-
-		span {
-			margin: 0 5px;
-		}
-
-		&:hover {
-			background-color: var(--nav-hover);
-		}
-
-		&:focus {
-			color: var(--focus);
-		}
-	}
-
-	.ka-menu-footer {
+	.action-row {
 		display: flex;
 		align-items: center;
 		flex-direction: row;
-		padding: 1rem 1.5rem;
-		justify-content: space-between;
-	}
-
-	@media (max-width: 640px) {
-		width: 100%;
+		justify-content: center;
+		.link {
+			margin-left: 0.5rem;
+		}
 	}
 }
 

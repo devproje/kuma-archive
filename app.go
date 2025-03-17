@@ -6,6 +6,7 @@ import (
 
 	"git.wh64.net/devproje/kuma-archive/config"
 	"git.wh64.net/devproje/kuma-archive/internal/routes"
+	"git.wh64.net/devproje/kuma-archive/internal/service"
 	"github.com/devproje/commando"
 	"github.com/devproje/commando/option"
 	"github.com/devproje/commando/types"
@@ -14,15 +15,17 @@ import (
 
 var (
 	hash    = "unknown"
+	branch  = "unknown"
 	version = "unknown"
 )
 
 func main() {
-	fmt.Printf("Kuma Archive %s-%s\n", version, hash)
 	command := commando.NewCommando(os.Args[1:])
 	cnf := config.Get()
 
+	ver := service.NewVersion(version, branch, hash)
 	command.Root("daemon", "run file server", func(n *commando.Node) error {
+		fmt.Printf("Kuma Archive %s\n", version)
 		debug, err := option.ParseBool(*n.MustGetOpt("debug"), n)
 		if err != nil {
 			return err
@@ -38,7 +41,7 @@ func main() {
 		}
 
 		gin := gin.Default()
-		routes.New(gin, apiOnly)
+		routes.New(gin, ver, apiOnly)
 
 		fmt.Fprintf(os.Stdout, "binding server at: http://0.0.0.0:%d\n", cnf.Port)
 		if err := gin.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
@@ -55,6 +58,11 @@ func main() {
 		Name: "api-only",
 		Desc: "no serve frontend service",
 		Type: types.BOOLEAN,
+	})
+
+	command.Root("version", "show system version info", func(n *commando.Node) error {
+		fmt.Printf("Kuma Archive version %s\n", ver.String())
+		return nil
 	})
 
 	if err := command.Execute(); err != nil {

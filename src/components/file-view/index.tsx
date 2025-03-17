@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRaw } from "../../store/raw";
-import "./fview.scss";
 import { useLocation } from "react-router";
 import { DynamicIcon } from "lucide-react/dynamic";
+
+import "./fview.scss";
 
 function FileView() {
 	const raw = useRaw();

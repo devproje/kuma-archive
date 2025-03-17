@@ -1,50 +1,37 @@
 .ka-fileview {
 	width: 100%;
 	display: flex;
-	margin: 1rem 0;
-	min-height: 300px;
+	align-items: center;
 	flex-direction: column;
-	border-top: 1px solid var(--foreground);
-	border-bottom: 1px solid var(--foreground);
+	justify-content: center;
 
-	.title {
+	.action-row {
 		width: 100%;
 		display: flex;
 		align-items: center;
-		flex-direction: row;
-		padding: 0.25rem 10px;
-		justify-content: space-between;
-		background-color: var(--nav-color);
-		border-bottom: 1px solid var(--foreground);
 
-		.name {
+		.link {
 			display: flex;
-			width: fit-content;
 			align-items: center;
 
-			b {
-				margin: 0 5px;
-			}
-		}
-
-		.action-row {
-			display: flex;
-			width: fit-content;
-			align-items: center;
-			justify-content: center;
-
-			.btn {
-				padding: 0;
-				margin-left: 5px;
+			span {
+				margin: 0.2rem 0;
 			}
 		}
 	}
 
-	pre, code {
-		margin: 0;
-		width: 100%;
-		padding: 10px;
-		display: flex;
-		border-radius: 0 0 15px 15px;
+	#icon {
+		margin: 3.5rem 0;
+	}
+
+	#download {
+		margin: 1rem 0;
+
+		a {
+			margin: 0 5px;
+			span {
+				margin-left: 5px;
+			}
+		}
 	}
 }

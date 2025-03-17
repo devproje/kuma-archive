@@ -1,68 +1,126 @@
-import { useEffect, useState } from "react";
-import { useRaw } from "../../store/raw";
 import { useLocation } from "react-router";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { useEffect, useState } from "react";
+import { convert } from "../../util/unit";
+import { usePath } from "../../store/path";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 import "./fview.scss";
 
 function FileView() {
-	const raw = useRaw();
+	const path = usePath();
 	const location = useLocation();
 	const [load, setLoad] = useState(false);
+	const [type, setType] = useState<IconName>("file");
 
 	useEffect(() => {
 		if (!load) {
-			raw.update(location.pathname.substring(1, location.pathname.length));
-			setLoad(true);
+			path.update(location.pathname.substring(1, location.pathname.length)).then(() => {
+				setLoad(true);
+
+				switch (true) {
+				case path.data?.path.endsWith(".zip"):
+				case path.data?.path.endsWith(".tar"):
+				case path.data?.path.endsWith(".tar.gz"):
+				case path.data?.path.endsWith(".tar.xz"):
+				case path.data?.path.endsWith(".7z"):
+				case path.data?.path.endsWith(".rar"):
+					setType("file-archive");
+					break;
+				case path.data?.path.endsWith(".pdf"):
+					setType("file-pen-line");
+					break;
+				case path.data?.path.endsWith(".doc"):
+				case path.data?.path.endsWith(".docx"):
+					setType("file-chart-pie");
+					break;
+				case path.data?.path.endsWith(".xls"):
+				case path.data?.path.endsWith(".xlsx"):
+					setType("file-spreadsheet");
+					break;
+				case path.data?.path.endsWith(".ppt"):
+				case path.data?.path.endsWith(".pptx"):
+					setType("file-sliders");
+					break;
+				case path.data?.path.endsWith(".jpg"):
+				case path.data?.path.endsWith(".jpeg"):
+				case path.data?.path.endsWith(".png"):
+				case path.data?.path.endsWith(".gif"):
+					setType("file-image");
+					break;
+				case path.data?.path.endsWith(".mp3"):
+				case path.data?.path.endsWith(".wav"):
+					setType("file-audio");
+					break;
+				case path.data?.path.endsWith(".mp4"):
+				case path.data?.path.endsWith(".mkv"):
+					setType("file-video");
+					break;
+				case path.data?.path.endsWith(".c"):
+				case path.data?.path.endsWith(".cpp"):
+				case path.data?.path.endsWith(".js"):
+				case path.data?.path.endsWith(".ts"):
+				case path.data?.path.endsWith(".jsx"):
+				case path.data?.path.endsWith(".tsx"):
+				case path.data?.path.endsWith(".py"):
+				case path.data?.path.endsWith(".java"):
+				case path.data?.path.endsWith(".rb"):
+				case path.data?.path.endsWith(".go"):
+				case path.data?.path.endsWith(".rs"):
+				case path.data?.path.endsWith(".php"):
+				case path.data?.path.endsWith(".html"):
+				case path.data?.path.endsWith(".css"):
+				case path.data?.path.endsWith(".scss"):
+					setType("file-code");
+					break;
+				case path.data?.path.endsWith(".sh"):
+				case path.data?.path.endsWith(".bat"):
+					setType("file-terminal");
+					break;
+				case path.data?.path.endsWith(".json"):
+					setType("file-json");
+					break;
+				default:
+					setType("file");
+					break;
+				}
+			});
 			return;
 		}
-	}, [raw, location, load]);
+	}, [path, location, load]);
+
+	if (typeof path.data === "undefined")
+		return <></>;
 
 	return (
 		<div className="ka-fileview">
-			<span className="title">
-				<div className="name">
-					<a className="link" href={location.pathname.endsWith("/") ? location.pathname + ".." : location.pathname + "/.."}>
-						<DynamicIcon name="chevron-left" size={21} />
-					</a>
-					<b>{decodeURIComponent(location.pathname)}</b>
-				</div>
-				<div className="action-row">
-					<a className="btn link" href={`/api/raw${location.pathname}`}>
-						<DynamicIcon name="file" size={21} />
-					</a>
-					<a className="btn link" onClick={ev => {
-						ev.preventDefault();
-						navigator.clipboard.writeText(`${document.location.origin}/api/raw${location.pathname}`)
-							.then(() => alert("url copied to clipboard"))
-							.catch(err => console.error("Failed to copy text: ", err));
-					}}>
-						<DynamicIcon name="link" size={21} />
-					</a>
-					<a className="btn link" onClick={ev => {
-						ev.preventDefault();
-						fetch(`/api/download${location.pathname}`)
-							.then(response => response.blob())
-							.then(blob => {
-								const url = window.URL.createObjectURL(blob);
-								const a = document.createElement("a");
+			<div className="action-row">
+				<a className="link" onClick={ev => {
+					ev.preventDefault();
+					document.location.href = document.location.href.substring(0, document.location.href.lastIndexOf("/"));
+				}}>
+					<DynamicIcon name="chevron-left" />
+					<span>Back to directory</span>
+				</a>
+			</div>
+			<DynamicIcon id="icon" name={type} size={120} />
+			<b>{path.data.path}</b>
+			{convert(path.data.total)}
 
-								a.style.display = "none";
-								a.href = url;
-								a.download = location.pathname.split("/").pop() || "download";
-
-								document.body.appendChild(a);
-								a.click();
-
-								window.URL.revokeObjectURL(url);
-							})
-							.catch(error => console.error("Download failed:", error));
-					}}>
-						<DynamicIcon name="download" size={21} />
-					</a>
-				</div>
-			</span>
-			<pre>{raw.data}</pre>
+			<div id="download">
+				<button className="primary" id="download" onClick={ev => {
+					ev.preventDefault();
+					const link = document.createElement("a");
+					link.href = `/api/download${path.data?.path}`;
+					link.download = `/api/download${path.data?.path}`;
+					
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}}>
+					<DynamicIcon name="cloud-download" />
+					<span>Download</span>
+				</button>
+			</div>
 		</div>
 	);
 }

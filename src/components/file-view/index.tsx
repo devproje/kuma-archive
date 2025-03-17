@@ -22,13 +22,13 @@ function FileView() {
 			<span className="title">
 				<div className="name">
 					<a className="link" href={location.pathname.endsWith("/") ? location.pathname + ".." : location.pathname + "/.."}>
-						<DynamicIcon name="chevron-left" />
+						<DynamicIcon name="chevron-left" size={21} />
 					</a>
-					<span>{location.pathname}</span>
+					<b>{location.pathname}</b>
 				</div>
 				<div className="action-row">
 					<a className="btn link" href={`/api/raw${location.pathname}`}>
-						<DynamicIcon name="file" />
+						<DynamicIcon name="file" size={21} />
 					</a>
 					<a className="btn link" onClick={ev => {
 						ev.preventDefault();
@@ -49,7 +49,7 @@ function FileView() {
 							})
 							.catch(error => console.error("Download failed:", error));
 					}}>
-						<DynamicIcon name="download" />
+						<DynamicIcon name="download" size={21} />
 					</a>
 				</div>
 			</span>

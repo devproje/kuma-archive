@@ -130,8 +130,12 @@ function Footer() {
 			) : <></> : <></>}
 			
 			<div className="footer">
-				<span>&copy; 2020-2025 Project_IO. All rights reserved.</span>
-				<span>Powered by WSERVER.</span>
+				<p>
+					&copy; 2020-2025 <a href="https://git.wh64.net/devproje">Project_IO</a>. All rights reserved for images.
+					<br />
+					Code licensed under the <a href="https://git.wh64.net/devproje/kuma-archive/src/branch/master/LICENSE">MIT License</a>.
+				</p>
+				<span> Powered by WSERVER</span>
 			</div>
 		</footer>
 	);

@@ -88,5 +88,9 @@
 		align-items: flex-end;
 		flex-direction: column;
 		justify-content: center;
+
+		* {
+			text-align: end;
+		}
 	}
 }

@@ -18,7 +18,7 @@
 		padding: 0.25rem 10px;
 		place-items: left center;
 		transition-duration: 300ms;
-		grid-template-columns: 0.1fr 2fr 1fr 1fr;
+		grid-template-columns: 0.15fr 2fr 1fr 1fr;
 
 		&:hover {
 			transition-duration: 300ms;
@@ -28,14 +28,27 @@
 		.ka-dir-item {
 			display: flex;
 			align-items: center;
-		}
+		}	
 		
 		a:hover.ka-dir-item {
 			text-decoration: underline;
+		}
+
+		@media (max-width: 640px) {
+			grid-template-columns: 0.05fr 1fr;
+
+			#size, #date {
+				display: none;
+			}
 		}
 	}
 }
 
 .ka-readme {
-	padding: 1rem;
+	padding: 1rem 1rem 0 1rem;
+
+	h1, h2 {
+		width: 100%;
+		border-bottom: 1px solid var(--foreground);
+	}
 }

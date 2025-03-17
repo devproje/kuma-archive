@@ -130,7 +130,8 @@ function Footer() {
 			) : <></> : <></>}
 			
 			<div className="footer">
-				&copy; 2020-2025 Project_IO. MIT License. Powered by WSERVER.
+				<span>&copy; 2020-2025 Project_IO. All rights reserved.</span>
+				<span>Powered by WSERVER.</span>
 			</div>
 		</footer>
 	);

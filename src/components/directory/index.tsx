@@ -19,8 +19,8 @@ function Directory() {
 				<div className="ka-dir-row ka-dir-top">
 					<div className="ka-dir-item"></div>
 					<b className="ka-dir-item">Name</b>
-					<b className="ka-dir-item">Size</b>
-					<b className="ka-dir-item">Date</b>
+					<b id="size" className="ka-dir-item">Size</b>
+					<b id="date" className="ka-dir-item">Date</b>
 				</div>
 
 				{path.data.path === "/" ? <></> : (
@@ -56,12 +56,12 @@ function DirItem({ data }: { data: DirEntry }) {
 			<a className="ka-dir-item" href={data.path}>
 				{data.name}
 			</a>
-			<span className="ka-dir-item">
+			<span id="size" className="ka-dir-item">
 				{data.is_dir ? (
 					"-"
 				): convert(data.file_size)}
 			</span>
-			<span className="ka-dir-item">
+			<span id="date" className="ka-dir-item">
 				{data.date === -1 ? "-" : new Date(data.date * 1000).toLocaleString("en-US", {
 					weekday: "short",
 					year: "numeric",

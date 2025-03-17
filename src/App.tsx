@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 
 import "./App.scss";
 import kuma from "./assets/kuma.png";
+import NotFound from "./components/notfound";
 
 function App() {
 	return (
@@ -41,17 +42,7 @@ function Dashboard() {
 	return (
 		<main className="container-md ka-view">
 			<Header />
-			{typeof path.data !== "undefined" ? path.data.is_dir ? <Directory /> : <FileView /> : (
-				<>
-					<h1>404 Not Found</h1>
-
-					<button className="primary" onClick={ev => {
-						ev.preventDefault();
-						document.location.href = "/";
-					}}>Back to home</button>
-				</>
-			)}
-			
+			{typeof path.data !== "undefined" ? path.data.is_dir ? <Directory /> : <FileView /> : <NotFound />}
 			<Footer />
 		</main>
 	);

@@ -1,0 +1,14 @@
+.not-found {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+
+	.icon {
+		margin: 3rem 0;
+	}
+
+	.primary {
+		margin: 0.5rem 0;
+	}
+}

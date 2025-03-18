@@ -2,10 +2,12 @@ import { useAuthStore } from "../../store/auth";
 
 function Logout() {
 	const auth = useAuthStore();
-	auth.clearToken();
-	
+	if (auth.token !== null)
+		auth.clearToken();
+
 	document.location.href = "/";
-	return <></>;
+
+	return <>Redirecting...</>;
 }
 
 export default Logout;

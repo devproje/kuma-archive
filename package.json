@@ -5,11 +5,11 @@
 	"license": "MIT",
 	"scripts": {
 		"build:view": "tsc -b && vite build",
-		"build:server": "go build -ldflags \"-X main.version=$(jq -r .version package.json) -X main.hash=$(git rev-parse --short=7 HEAD) -X main.branch=$(git rev-parse --abbrev-ref HEAD)\" -o kuma-archive",
+		"build:server": "sh ./scripts/build.sh",
 		"build": "bun run build:view && bun run build:server",
 		"dev:view": "vite",
-		"dev:server": "go run -ldflags \"-X main.version=$(jq -r .version package.json) -X main.hash=$(git rev-parse --short=7 HEAD) -X main.branch=$(git rev-parse --abbrev-ref HEAD)\" ./app.go daemon -d --api-only",
-		"dev": "bun run build:view && go run -ldflags \"-X main.version=$(jq -r .version package.json) -X main.hash=$(git rev-parse --short=7 HEAD) -X main.branch=$(git rev-parse --abbrev-ref HEAD)\" ./app.go daemon -d",
+		"dev:server": "sh ./scripts/build.sh --run --api-only",
+		"dev": "bun run build:view && sh ./scripts/build.sh --run",
 		"package": "sh ./scripts/package.sh",
 		"lint": "eslint .",
 		"preview": "vite preview"

@@ -70,24 +70,6 @@ func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 			})
 		})
 
-		api.GET("/raw/*path", func(ctx *gin.Context) {
-			worker := service.NewWorkerService()
-			path := ctx.Param("path")
-			data, err := worker.Read(path)
-			if err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
-				ctx.Status(404)
-				return
-			}
-
-			if data.IsDir {
-				ctx.String(400, "current path is not file")
-				return
-			}
-
-			ctx.File(data.Path)
-		})
-
 		api.GET("/download/*path", func(ctx *gin.Context) {
 			worker := service.NewWorkerService()
 			path := ctx.Param("path")

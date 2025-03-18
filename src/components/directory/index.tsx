@@ -84,7 +84,7 @@ function Readme() {
 	useEffect(() => {
 		async function refresh() {
 			const pathname = location.pathname;
-			const res = await fetch(`/api/raw${pathname}${pathname.endsWith("/") ? "" : "/"}README.md`, {
+			const res = await fetch(`/api/download${pathname}${pathname.endsWith("/") ? "" : "/"}README.md`, {
 				cache: "no-cache"
 			});
 

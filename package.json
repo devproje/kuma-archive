@@ -12,7 +12,8 @@
 		"dev": "bun run build:view && sh ./scripts/build.sh --run",
 		"package": "sh ./scripts/package.sh",
 		"lint": "eslint .",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"clean": "rm -rf kuma-archive web/"
 	},
 	"dependencies": {
 		"bootstrap": "^5.3.3",

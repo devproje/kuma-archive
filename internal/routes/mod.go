@@ -106,6 +106,38 @@ func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 			ctx.FileAttachment(data.Path, data.Name)
 		})
 
+		auth := api.Group("/auth")
+		{
+			auth.POST("/login", func(ctx *gin.Context) {
+				auth := service.NewAuthService()
+				username := ctx.PostForm("username")
+				password := ctx.PostForm("password")
+
+				acc, err := auth.Read(username)
+				if err != nil {
+					ctx.JSON(401, gin.H{
+						"ok":    0,
+						"errno": "username or password not invalid",
+					})
+					return
+				}
+
+				ok, err := auth.Verify(username, password)
+				if err != nil || !ok {
+					ctx.JSON(401, gin.H{
+						"ok":    0,
+						"errno": "username or password not invalid",
+					})
+					return
+				}
+
+				ctx.JSON(200, gin.H{
+					"ok":    1,
+					"token": auth.Token(acc.Username, acc.Password),
+				})
+			})
+		}
+
 		api.GET("/version", func(ctx *gin.Context) {
 			ctx.String(200, "%s", version.String())
 		})

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"syscall"
 
 	"git.wh64.net/devproje/kuma-archive/config"
 	"git.wh64.net/devproje/kuma-archive/internal/routes"
@@ -11,6 +13,7 @@ import (
 	"github.com/devproje/commando/option"
 	"github.com/devproje/commando/types"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/term"
 )
 
 var (
@@ -40,6 +43,9 @@ func main() {
 			gin.SetMode(gin.ReleaseMode)
 		}
 
+		// init auth module
+		service.NewAuthService()
+
 		gin := gin.Default()
 		routes.New(gin, ver, apiOnly)
 
@@ -63,6 +69,45 @@ func main() {
 	command.Root("version", "show system version info", func(n *commando.Node) error {
 		fmt.Printf("Kuma Archive version %s\n", ver.String())
 		return nil
+	})
+
+	command.ComplexRoot("account", "file server account manager", []commando.Node{
+		command.Then("create", "create account", func(n *commando.Node) error {
+			var username, password string
+
+			fmt.Print("new username: ")
+			if _, err := fmt.Scanln(&username); err != nil {
+				return fmt.Errorf("failed to read username: %v", err)
+			}
+
+			fmt.Print("new password: ")
+			bytePassword, err := term.ReadPassword(int(syscall.Stdin))
+			if err != nil {
+				return fmt.Errorf("failed to read password: %v", err)
+			}
+			password = string(bytePassword)
+			fmt.Println()
+
+			fmt.Print("type new password one more time: ")
+			checkByte, err := term.ReadPassword(int(syscall.Stdin))
+			if err != nil {
+				return fmt.Errorf("failed to read password: %v", err)
+			}
+			check := string(checkByte)
+			fmt.Println()
+
+			if password != check {
+				return errors.New("password check is not correct")
+			}
+
+			auth := service.NewAuthService()
+			if err := auth.Create(&service.Account{Username: username, Password: password}); err != nil {
+				return err
+			}
+
+			fmt.Printf("Account for %s created successfully\n", username)
+			return nil
+		}),
 	})
 
 	if err := command.Execute(); err != nil {

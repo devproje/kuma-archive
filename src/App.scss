@@ -31,8 +31,35 @@
 		align-items: center;
 		flex-direction: row;
 		justify-content: center;
+		
 		.link {
 			margin-left: 0.5rem;
+		}
+
+		.login-info {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			span {
+				margin-left: 10px;
+			}
+		}
+
+		.login-btn {
+			display: flex;
+			margin-left: 0.5rem;
+			align-items: center;
+			border-radius: 25px;
+			padding: 0.45rem 1rem;
+			justify-content: center;
+			transition-duration: 300ms;
+			background-color: var(--nav-color);
+
+			&:hover {
+				transition-duration: 300ms;
+				background-color: var(--nav-hover);
+			}
 		}
 	}
 }

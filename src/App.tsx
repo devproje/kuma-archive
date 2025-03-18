@@ -9,18 +9,33 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./App.scss";
 import kuma from "./assets/kuma.png";
 import NotFound from "./components/notfound";
+import Login from "./components/login";
+import { useAuthStore } from "./store/auth";
+import Logout from "./components/logout";
 
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path={"*"} element={<Dashboard />} />
+				<Route path="/login" element={<Dashboard children={<Login />} />} />
+				<Route path="/logout" element={<Logout />} />
+				<Route path={"*"} element={<Dashboard children={<View />} />} />
 			</Routes>
 		</BrowserRouter>
 	);
 }
 
-function Dashboard() {
+function Dashboard({ children }: { children: React.ReactNode }) {
+	return (
+		<main className="container-md ka-view">
+			<Header />
+			{children}
+			<Footer />
+		</main>
+	);
+}
+
+function View() {
 	const path = usePath();
 	const location = useLocation();
 	const [load, setLoad] = useState(false);
@@ -39,16 +54,20 @@ function Dashboard() {
 		return <></>;
 	}
 
-	return (
-		<main className="container-md ka-view">
-			<Header />
-			{typeof path.data !== "undefined" ? path.data.is_dir ? <Directory /> : <FileView /> : <NotFound />}
-			<Footer />
-		</main>
-	);
+	if (typeof path.data === "undefined") {
+		return <NotFound />;
+	}
+
+	if (path.data.is_dir) {
+		return <Directory />;
+	}
+
+	return <FileView />;
 }
 
 function Header() {
+	const auth = useAuthStore();
+
 	return (
 		<nav className="ka-nav">
 			<a className="title" href="/">
@@ -63,6 +82,20 @@ function Header() {
 				<a className="link" href="https://projecttl.net">
 					<DynamicIcon name="globe" size={15} />
 				</a>
+				
+				{!auth.token ? (
+					<a className="login-btn" href="/login">
+						Login
+					</a>
+				) : (
+					<div className="login-info">
+						<span>Logged in as Admin</span>
+						<a className="login-btn" href="/logout">
+							Logout
+						</a>
+					</div>
+				)}
+				
 			</div>
 		</nav>
 	);

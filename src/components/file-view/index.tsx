@@ -107,7 +107,7 @@ function FileView() {
 			{convert(path.data.total)}
 
 			<div id="download">
-				<button className="primary" id="download" onClick={ev => {
+				<button className="download-btn secondary" onClick={ev => {
 					ev.preventDefault();
 					const link = document.createElement("a");
 					link.href = `/api/download${path.data?.path}`;

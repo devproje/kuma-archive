@@ -63,24 +63,30 @@ func authentication(group *gin.RouterGroup) {
 		ctx.Status(200)
 	})
 
-	// TODO: change to middleware soon
-	group.GET("/check", func(ctx *gin.Context) {
+	group.DELETE("/delete", func(ctx *gin.Context) {
 		auth := service.NewAuthService()
-		username, password, ok := ctx.Request.BasicAuth()
+		pass := ctx.PostForm("password")
+		username, _, ok := ctx.Request.BasicAuth()
 		if !ok {
-			ctx.Status(401)
+			ctx.Status(403)
 			return
 		}
 
-		validate, err := auth.VerifyToken(username, password)
+		ok, err := auth.Verify(username, pass)
 		if err != nil {
 			ctx.Status(500)
-			fmt.Fprintln(os.Stderr, err)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			return
 		}
 
-		if !validate {
-			ctx.Status(401)
+		if !ok {
+			ctx.Status(403)
+			return
+		}
+
+		if err = auth.Delete(username); err != nil {
+			ctx.Status(500)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			return
 		}
 

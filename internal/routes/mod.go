@@ -13,6 +13,7 @@ import (
 
 func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 	app.Use(middleware.CORS)
+	app.Use(middleware.BasicAuth)
 
 	api := app.Group("/api")
 	{

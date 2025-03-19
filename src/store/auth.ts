@@ -7,10 +7,11 @@ export interface AuthData {
 }
 
 
-interface AuthState {
+export interface AuthState {
 	token: string | null;
 	setToken: (token: string) => void;
 	clearToken: () => void;
+	checkToken: (token: string) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -19,6 +20,15 @@ export const useAuthStore = create<AuthState>()(
 			token: null,
 			setToken: (token) => set({ token }),
 			clearToken: () => set({ token: null }),
+			checkToken: async (token: string) => {
+				const res = await fetch("/api/auth/check", {
+					headers: {
+						"Authorization": `Basic ${token}`
+					}
+				});
+
+				return res.status === 200;
+			}
 		}),
 		{
 			name: "auth-storage"

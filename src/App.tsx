@@ -12,6 +12,7 @@ import NotFound from "./components/notfound";
 import Login from "./components/login";
 import { useAuthStore } from "./store/auth";
 import Logout from "./components/logout";
+import Settings from "./components/settings";
 
 function App() {
 	return (
@@ -19,6 +20,7 @@ function App() {
 			<Routes>
 				<Route path="/login" element={<Dashboard children={<Login />} />} />
 				<Route path="/logout" element={<Logout />} />
+				<Route path="/settings" element={<Dashboard children={<Settings />} />} />
 				<Route path={"*"} element={<Dashboard children={<View />} />} />
 			</Routes>
 		</BrowserRouter>
@@ -67,6 +69,18 @@ function View() {
 
 function Header() {
 	const auth = useAuthStore();
+	const [isAuth, setAuth] = useState(false);
+
+	useEffect(() => {
+		if (auth.token === null) {
+			return;
+		}
+
+		auth.checkToken(auth.token).then((ok) => {
+			if (ok)
+				setAuth(true);
+		});
+	}, [auth, isAuth]);
 
 	return (
 		<nav className="ka-nav">
@@ -83,17 +97,22 @@ function Header() {
 					<DynamicIcon name="globe" size={15} />
 				</a>
 				
-				{!auth.token ? (
+				{!isAuth ? (
 					<a className="login-btn" href="/login">
 						Login
 					</a>
 				) : (
-					<div className="login-info">
-						<span>Logged in as Admin</span>
-						<a className="login-btn" href="/logout">
-							Logout
+					<>
+						<a className="link" href="/settings">
+							<DynamicIcon name="settings" size={15} />
 						</a>
-					</div>
+						<div className="login-info">
+							<span>Logged in as Admin</span>
+							<a className="login-btn" href="/logout">
+								Logout
+							</a>
+						</div>
+					</>
 				)}
 				
 			</div>

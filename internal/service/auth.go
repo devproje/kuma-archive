@@ -146,6 +146,19 @@ func (s *AuthService) Verify(username, password string) (bool, error) {
 	return false, nil
 }
 
+func (s *AuthService) VerifyToken(username, encryptPw string) (bool, error) {
+	account, err := s.Read(username)
+	if err != nil {
+		return false, err
+	}
+
+	if encryptPw == account.Password {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 func (s *AuthService) Token(username, password string) string {
 	raw := fmt.Sprintf("%s:%s", username, password)
 	return base64.StdEncoding.EncodeToString([]byte(raw))

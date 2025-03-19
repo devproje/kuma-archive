@@ -13,8 +13,14 @@ function Login() {
 	const passwordRef = useRef<HTMLInputElement>(null);
 	const errnoRef = useRef<HTMLInputElement>(null);
 
-	if (auth.token !== null)
-		document.location.href = "/";
+	if (auth.token !== null) {
+		auth.checkToken(auth.token).then((ok) => {
+			if (!ok)
+				return;
+			
+			document.location.href = "/";
+		});
+	}
 
 	return (
 		<div className="ka-login">

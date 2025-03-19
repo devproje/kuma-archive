@@ -63,6 +63,7 @@ func authentication(group *gin.RouterGroup) {
 		ctx.Status(200)
 	})
 
+	// TODO: change to middleware soon
 	group.GET("/check", func(ctx *gin.Context) {
 		auth := service.NewAuthService()
 		username, password, ok := ctx.Request.BasicAuth()

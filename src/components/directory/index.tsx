@@ -6,6 +6,7 @@ import "./directory.scss";
 import Markdown from "react-markdown";
 import { Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import { FileNavigator } from "../navigation";
 
 function Directory() {
 	const path = usePath();
@@ -16,6 +17,7 @@ function Directory() {
 	return (
 		<>
 			<div className="ka-dir">
+				<FileNavigator />
 				<div className="ka-dir-row ka-dir-top">
 					<div className="ka-dir-item"></div>
 					<b className="ka-dir-item">Name</b>

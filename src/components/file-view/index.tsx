@@ -5,6 +5,7 @@ import { usePath } from "../../store/path";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 import "./fview.scss";
+import { FileNavigator } from "../navigation";
 
 function FileView() {
 	const path = usePath();
@@ -93,15 +94,7 @@ function FileView() {
 
 	return (
 		<div className="ka-fileview">
-			<div className="action-row">
-				<a className="link" onClick={ev => {
-					ev.preventDefault();
-					document.location.href = document.location.href.substring(0, document.location.href.lastIndexOf("/"));
-				}}>
-					<DynamicIcon name="chevron-left" />
-					<span>Back to directory</span>
-				</a>
-			</div>
+			<FileNavigator />
 			<DynamicIcon id="icon" name={type} size={120} />
 			<b>{path.data.path}</b>
 			{convert(path.data.total)}

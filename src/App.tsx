@@ -1,19 +1,18 @@
+import Login from "./components/login";
+import Logout from "./components/logout";
 import { useEffect, useState } from "react";
+import Settings from "./components/settings";
 import { useVersion } from "./store/version";
+import NotFound from "./components/notfound";
 import FileView from "./components/file-view";
 import Directory from "./components/directory";
 import { DirEntry, usePath } from "./store/path";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { AccountData, useAuthStore } from "./store/auth";
 
 import "./App.scss";
 import kuma from "./assets/kuma.png";
-import NotFound from "./components/notfound";
-import Login from "./components/login";
-import { AccountData, useAuthStore } from "./store/auth";
-import Logout from "./components/logout";
-import Settings from "./components/settings";
-import { FileNavigator } from "./components/navigation";
 
 function App() {
 	return (
@@ -32,7 +31,6 @@ function Dashboard({ children }: { children: React.ReactNode }) {
 	return (
 		<main className="container-md ka-view">
 			<Header />
-			<FileNavigator />
 			{children}
 			<Footer />
 		</main>
@@ -125,7 +123,7 @@ function Header() {
 							<DynamicIcon name="settings" size={15} />
 						</a>
 						<div className="login-info">
-							<span>Logged in as {username}</span>
+							<span className="username">Logged in as {username}</span>
 							<a className="login-btn" href="/logout">
 								Logout
 							</a>

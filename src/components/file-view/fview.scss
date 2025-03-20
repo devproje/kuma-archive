@@ -5,21 +5,6 @@
 	flex-direction: column;
 	justify-content: center;
 
-	.action-row {
-		width: 100%;
-		display: flex;
-		align-items: center;
-
-		.link {
-			display: flex;
-			align-items: center;
-
-			span {
-				margin: 0.2rem 0;
-			}
-		}
-	}
-
 	#icon {
 		margin: 3.5rem 0;
 	}

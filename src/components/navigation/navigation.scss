@@ -1,0 +1,24 @@
+.ka-navigator {
+	width: 100%;
+	display: flex;
+	margin: 10px 0;
+	align-items: center;
+
+	.current {
+		color: var(--foreground);
+	}
+
+	* {
+		color: var(--description-color);
+		transition-duration: 0.3s;
+
+		&:hover {
+			color: var(--foreground);
+			transition-duration: 0.3s;
+		}
+	}
+
+	.heap {
+		margin: 0 0.5rem;
+	}
+}

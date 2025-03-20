@@ -39,7 +39,6 @@ func init() {
 		);
 	`))
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
 	defer stmt.Close()

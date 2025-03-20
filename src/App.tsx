@@ -10,9 +10,10 @@ import "./App.scss";
 import kuma from "./assets/kuma.png";
 import NotFound from "./components/notfound";
 import Login from "./components/login";
-import { useAuthStore } from "./store/auth";
+import { AccountData, useAuthStore } from "./store/auth";
 import Logout from "./components/logout";
 import Settings from "./components/settings";
+import { FileNavigator } from "./components/navigation";
 
 function App() {
 	return (
@@ -31,6 +32,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
 	return (
 		<main className="container-md ka-view">
 			<Header />
+			<FileNavigator />
 			{children}
 			<Footer />
 		</main>
@@ -70,6 +72,7 @@ function View() {
 function Header() {
 	const auth = useAuthStore();
 	const [isAuth, setAuth] = useState(false);
+	const [username, setUsername] = useState("undefined");
 
 	useEffect(() => {
 		if (auth.token === null) {
@@ -79,6 +82,21 @@ function Header() {
 		auth.checkToken(auth.token).then((ok) => {
 			if (ok)
 				setAuth(true);
+		});
+
+		fetch("/api/auth/read", {
+			method: "GET",
+			mode: "same-origin",
+			headers: {
+				"Authorization": `Basic ${auth.token}`
+			}
+		}).then(res => {
+			if (res.status !== 200)
+				return;
+
+			return res.json();
+		}).then((data: AccountData) => {
+			setUsername(data.username);
 		});
 	}, [auth, isAuth]);
 
@@ -107,7 +125,7 @@ function Header() {
 							<DynamicIcon name="settings" size={15} />
 						</a>
 						<div className="login-info">
-							<span>Logged in as Admin</span>
+							<span>Logged in as {username}</span>
 							<a className="login-btn" href="/logout">
 								Logout
 							</a>

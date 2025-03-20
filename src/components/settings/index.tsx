@@ -33,8 +33,12 @@ function Settings() {
 	return (
 		<div className="ka-settings">
 			<h2 className="ka-title">General</h2>
-
 			<AccountSetting auth={auth} />
+
+			<h2 className="ka-title">Private Directory</h2>
+			<SettingBox>
+				<h3>Not provided features</h3>
+			</SettingBox>
 		</div>
 	);
 }
@@ -51,6 +55,8 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 	const orRef = useRef<HTMLInputElement>(null);
 	const pwRef = useRef<HTMLInputElement>(null);
 	const ckRef = useRef<HTMLInputElement>(null);
+	
+	const [remove, setRemove] = useState(false);
 
 	return (
 		<SettingBox>
@@ -117,7 +123,14 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 				</div>
 
 				<form className="box-col">
-					<button type="submit" className="danger" onClick={ev => {
+					<label className="checkbox">
+						<input type="checkbox" onChange={ev => {
+							setRemove(ev.target.checked);
+						}} />
+						<span>I agree to remove my account.</span>
+					</label>
+					
+					<button type="submit" className="danger" disabled={!remove} onClick={ev => {
 						ev.preventDefault();
 
 						fetch("/api/auth/delete", {

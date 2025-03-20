@@ -6,6 +6,11 @@ export interface AuthData {
 	token: string;
 }
 
+export interface AccountData {
+	ok: number;
+	username: string;
+}
+
 
 export interface AuthState {
 	token: string | null;

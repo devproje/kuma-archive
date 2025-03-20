@@ -107,19 +107,10 @@ function FileView() {
 			{convert(path.data.total)}
 
 			<div id="download">
-				<button className="download-btn secondary" onClick={ev => {
-					ev.preventDefault();
-					const link = document.createElement("a");
-					link.href = `/api/download${path.data?.path}`;
-					link.download = `/api/download${path.data?.path}`;
-					
-					document.body.appendChild(link);
-					link.click();
-					document.body.removeChild(link);
-				}}>
+				<a className="download-btn" href={`/api/download${path.data?.path}`}>
 					<DynamicIcon name="cloud-download" />
 					<span>Download</span>
-				</button>
+				</a>
 			</div>
 		</div>
 	);

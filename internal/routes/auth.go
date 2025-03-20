@@ -38,19 +38,49 @@ func authentication(group *gin.RouterGroup) {
 		})
 	})
 
+	group.GET("/read", func(ctx *gin.Context) {
+		auth := service.NewAuthService()
+		username, password, ok := ctx.Request.BasicAuth()
+		if !ok {
+			ctx.Status(401)
+			return
+		}
+
+		ok, err := auth.VerifyToken(username, password)
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"ok":    0,
+				"errno": "internal server error!",
+			})
+		}
+
+		if !ok {
+			ctx.JSON(401, gin.H{
+				"ok":    0,
+				"errno": "unauthorized",
+			})
+			return
+		}
+
+		ctx.JSON(200, gin.H{
+			"ok":       1,
+			"username": username,
+		})
+	})
+
 	group.PATCH("/update", func(ctx *gin.Context) {
 		auth := service.NewAuthService()
 		old := ctx.PostForm("password")
 		new := ctx.PostForm("new_password")
 		username, _, ok := ctx.Request.BasicAuth()
 		if !ok {
-			ctx.Status(403)
+			ctx.Status(401)
 			return
 		}
 
 		ok, err := auth.Verify(username, old)
 		if err != nil || !ok {
-			ctx.Status(403)
+			ctx.Status(401)
 			return
 		}
 
@@ -65,14 +95,13 @@ func authentication(group *gin.RouterGroup) {
 
 	group.DELETE("/delete", func(ctx *gin.Context) {
 		auth := service.NewAuthService()
-		pass := ctx.PostForm("password")
-		username, _, ok := ctx.Request.BasicAuth()
+		username, password, ok := ctx.Request.BasicAuth()
 		if !ok {
-			ctx.Status(403)
+			ctx.Status(401)
 			return
 		}
 
-		ok, err := auth.Verify(username, pass)
+		ok, err := auth.VerifyToken(username, password)
 		if err != nil {
 			ctx.Status(500)
 			_, _ = fmt.Fprintln(os.Stderr, err)
@@ -80,7 +109,7 @@ func authentication(group *gin.RouterGroup) {
 		}
 
 		if !ok {
-			ctx.Status(403)
+			ctx.Status(401)
 			return
 		}
 

@@ -29,7 +29,7 @@ func BasicAuth(ctx *gin.Context) {
 	auth := service.NewAuthService()
 	username, password, ok := ctx.Request.BasicAuth()
 	if !ok {
-		ctx.Status(403)
+		ctx.Status(401)
 		return
 	}
 
@@ -41,7 +41,7 @@ func BasicAuth(ctx *gin.Context) {
 	}
 
 	if !ok {
-		ctx.Status(403)
+		ctx.Status(401)
 		return
 	}
 

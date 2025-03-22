@@ -9,116 +9,121 @@ import (
 )
 
 func authentication(group *gin.RouterGroup) {
-	group.POST("/login", func(ctx *gin.Context) {
-		auth := service.NewAuthService()
-		username := ctx.PostForm("username")
-		password := ctx.PostForm("password")
+	group.POST("/login", login)
+	group.GET("/read", readAcc)
+	group.PATCH("/update", updateAcc)
+	group.DELETE("/delete", deleteAcc)
+}
 
-		acc, err := auth.Read(username)
-		if err != nil {
-			ctx.JSON(401, gin.H{
-				"ok":    0,
-				"errno": "username or password not invalid",
-			})
-			return
-		}
+func login(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
 
-		ok, err := auth.Verify(username, password)
-		if err != nil || !ok {
-			ctx.JSON(401, gin.H{
-				"ok":    0,
-				"errno": "username or password not invalid",
-			})
-			return
-		}
-
-		ctx.JSON(200, gin.H{
-			"ok":    1,
-			"token": auth.Token(acc.Username, acc.Password),
+	acc, err := auth.Read(username)
+	if err != nil {
+		ctx.JSON(401, gin.H{
+			"ok":    0,
+			"errno": "username or password not invalid",
 		})
-	})
+		return
+	}
 
-	group.GET("/read", func(ctx *gin.Context) {
-		auth := service.NewAuthService()
-		username, password, ok := ctx.Request.BasicAuth()
-		if !ok {
-			ctx.Status(401)
-			return
-		}
-
-		ok, err := auth.VerifyToken(username, password)
-		if err != nil {
-			ctx.JSON(500, gin.H{
-				"ok":    0,
-				"errno": "internal server error!",
-			})
-		}
-
-		if !ok {
-			ctx.JSON(401, gin.H{
-				"ok":    0,
-				"errno": "unauthorized",
-			})
-			return
-		}
-
-		ctx.JSON(200, gin.H{
-			"ok":       1,
-			"username": username,
+	ok, err := auth.Verify(username, password)
+	if err != nil || !ok {
+		ctx.JSON(401, gin.H{
+			"ok":    0,
+			"errno": "username or password not invalid",
 		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"ok":    1,
+		"token": auth.Token(acc.Username, acc.Password),
 	})
+}
 
-	group.PATCH("/update", func(ctx *gin.Context) {
-		auth := service.NewAuthService()
-		old := ctx.PostForm("password")
-		new := ctx.PostForm("new_password")
-		username, _, ok := ctx.Request.BasicAuth()
-		if !ok {
-			ctx.Status(401)
-			return
-		}
+func readAcc(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	username, password, ok := ctx.Request.BasicAuth()
+	if !ok {
+		ctx.Status(401)
+		return
+	}
 
-		ok, err := auth.Verify(username, old)
-		if err != nil || !ok {
-			ctx.Status(401)
-			return
-		}
+	ok, err := auth.VerifyToken(username, password)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"ok":    0,
+			"errno": "internal server error!",
+		})
+	}
 
-		if err = auth.Update(username, new); err != nil {
-			ctx.Status(500)
-			_, _ = fmt.Fprintln(os.Stderr, err)
-			return
-		}
+	if !ok {
+		ctx.JSON(401, gin.H{
+			"ok":    0,
+			"errno": "unauthorized",
+		})
+		return
+	}
 
-		ctx.Status(200)
+	ctx.JSON(200, gin.H{
+		"ok":       1,
+		"username": username,
 	})
+}
 
-	group.DELETE("/delete", func(ctx *gin.Context) {
-		auth := service.NewAuthService()
-		username, password, ok := ctx.Request.BasicAuth()
-		if !ok {
-			ctx.Status(401)
-			return
-		}
+func updateAcc(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	old := ctx.PostForm("password")
+	new := ctx.PostForm("new_password")
+	username, _, ok := ctx.Request.BasicAuth()
+	if !ok {
+		ctx.Status(401)
+		return
+	}
 
-		ok, err := auth.VerifyToken(username, password)
-		if err != nil {
-			ctx.Status(500)
-			_, _ = fmt.Fprintln(os.Stderr, err)
-			return
-		}
+	ok, err := auth.Verify(username, old)
+	if err != nil || !ok {
+		ctx.Status(401)
+		return
+	}
 
-		if !ok {
-			ctx.Status(401)
-			return
-		}
+	if err = auth.Update(username, new); err != nil {
+		ctx.Status(500)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
+	}
 
-		if err = auth.Delete(username); err != nil {
-			ctx.Status(500)
-			_, _ = fmt.Fprintln(os.Stderr, err)
-			return
-		}
+	ctx.Status(200)
+}
 
-		ctx.Status(200)
-	})
+func deleteAcc(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	username, password, ok := ctx.Request.BasicAuth()
+	if !ok {
+		ctx.Status(401)
+		return
+	}
+
+	ok, err := auth.VerifyToken(username, password)
+	if err != nil {
+		ctx.Status(500)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
+	}
+
+	if !ok {
+		ctx.Status(401)
+		return
+	}
+
+	if err = auth.Delete(username); err != nil {
+		ctx.Status(500)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
+	}
+
+	ctx.Status(200)
 }

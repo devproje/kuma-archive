@@ -46,11 +46,11 @@ func main() {
 		// init auth module
 		service.NewAuthService()
 
-		gin := gin.Default()
-		routes.New(gin, ver, apiOnly)
+		app := gin.Default()
+		routes.New(app, ver, apiOnly)
 
 		fmt.Fprintf(os.Stdout, "binding server at: http://0.0.0.0:%d\n", cnf.Port)
-		if err := gin.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
+		if err = app.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
 			return err
 		}
 
@@ -81,7 +81,7 @@ func main() {
 			}
 
 			fmt.Print("new password: ")
-			bytePassword, err := term.ReadPassword(int(syscall.Stdin))
+			bytePassword, err := term.ReadPassword(syscall.Stdin)
 			if err != nil {
 				return fmt.Errorf("failed to read password: %v", err)
 			}
@@ -89,7 +89,7 @@ func main() {
 			fmt.Println()
 
 			fmt.Print("type new password one more time: ")
-			checkByte, err := term.ReadPassword(int(syscall.Stdin))
+			checkByte, err := term.ReadPassword(syscall.Stdin)
 			if err != nil {
 				return fmt.Errorf("failed to read password: %v", err)
 			}
@@ -101,7 +101,7 @@ func main() {
 			}
 
 			auth := service.NewAuthService()
-			if err := auth.Create(&service.Account{Username: username, Password: password}); err != nil {
+			if err = auth.Create(&service.Account{Username: username, Password: password}); err != nil {
 				return err
 			}
 
@@ -111,7 +111,7 @@ func main() {
 	})
 
 	if err := command.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 }

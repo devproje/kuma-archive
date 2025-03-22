@@ -14,11 +14,12 @@ func BasicAuth(ctx *gin.Context) {
 	var list = []string{"/settings"}
 
 	for _, i := range list {
-		if !strings.Contains(ctx.Request.URL.Path, i) {
+		if !strings.HasPrefix(ctx.Request.URL.Path, i) {
 			continue
 		}
 
 		matches = true
+		break
 	}
 
 	if !matches {

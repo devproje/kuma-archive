@@ -35,7 +35,7 @@ func init() {
 			username varchar(25),
 			password varchar(255),
 			salt varchar(50),
-			primary key (username)
+			constraint PK_Account_ID primary key(username)
 		);
 	`))
 	if err != nil {

@@ -26,6 +26,12 @@ func main() {
 	command := commando.NewCommando(os.Args[1:])
 	cnf := config.Get()
 
+	// init auth module
+	auth := service.NewAuthService()
+
+	// init priv module
+	_ = service.NewPrivDirService(nil)
+
 	ver := service.NewVersion(version, branch, hash)
 	command.Root("daemon", "run file server", func(n *commando.Node) error {
 		fmt.Printf("Kuma Archive %s\n", version)
@@ -43,13 +49,10 @@ func main() {
 			gin.SetMode(gin.ReleaseMode)
 		}
 
-		// init auth module
-		service.NewAuthService()
-
 		app := gin.Default()
 		routes.New(app, ver, apiOnly)
 
-		fmt.Fprintf(os.Stdout, "binding server at: http://0.0.0.0:%d\n", cnf.Port)
+		_, _ = fmt.Fprintf(os.Stdout, "binding server at: http://0.0.0.0:%d\n", cnf.Port)
 		if err = app.Run(fmt.Sprintf(":%d", cnf.Port)); err != nil {
 			return err
 		}
@@ -100,7 +103,6 @@ func main() {
 				return errors.New("password check is not correct")
 			}
 
-			auth := service.NewAuthService()
 			if err = auth.Create(&service.Account{Username: username, Password: password}); err != nil {
 				return err
 			}

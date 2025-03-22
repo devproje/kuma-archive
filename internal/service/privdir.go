@@ -32,10 +32,11 @@ func init() {
 			owner varchar(25),
 			constraint PK_PrivDir_ID primary key(id),
 			constraint FK_Owner_ID foreign key(owner)
-			references(Account.username) on update cascade on delete cascade
+			    references Account(username) on update cascade on delete cascade
 		);
 	`))
 	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
 	defer stmt.Close()
@@ -52,7 +53,7 @@ func NewPrivDirService(acc *Account) *PrivDirService {
 	}
 }
 
-func (sv *PrivDirService) CreatePriv(dirname string) error {
+func (sv *PrivDirService) Create(dirname string) error {
 	db, err := Open()
 	if err != nil {
 		return err
@@ -70,7 +71,7 @@ func (sv *PrivDirService) CreatePriv(dirname string) error {
 	return nil
 }
 
-func (sv *PrivDirService) ReadPriv(name string) (*PrivDir, error) {
+func (sv *PrivDirService) Read(dirname string) (*PrivDir, error) {
 	db, err := Open()
 	if err != nil {
 		return nil, err
@@ -83,7 +84,7 @@ func (sv *PrivDirService) ReadPriv(name string) (*PrivDir, error) {
 	}
 	defer stmt.Close()
 
-	row := stmt.QueryRow(name, sv.acc.Username)
+	row := stmt.QueryRow(dirname, sv.acc.Username)
 	var data PrivDir
 
 	if err = row.Scan(&data.Id, &data.DirName, &data.Owner); err != nil {
@@ -93,7 +94,7 @@ func (sv *PrivDirService) ReadPriv(name string) (*PrivDir, error) {
 	return &data, nil
 }
 
-func (sv *PrivDirService) DeletePriv(name string) error {
+func (sv *PrivDirService) Delete(dirname string) error {
 	db, err := Open()
 	if err != nil {
 		return err
@@ -106,7 +107,7 @@ func (sv *PrivDirService) DeletePriv(name string) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(name, sv.acc.Username)
+	_, err = stmt.Exec(dirname, sv.acc.Username)
 	if err != nil {
 		return err
 	}
@@ -114,7 +115,7 @@ func (sv *PrivDirService) DeletePriv(name string) error {
 	return nil
 }
 
-func (sv *PrivDirService) QueryPriv() ([]*PrivDir, error) {
+func (sv *PrivDirService) Query() ([]*PrivDir, error) {
 	db, err := Open()
 	if err != nil {
 		return nil, err

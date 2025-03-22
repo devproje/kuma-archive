@@ -9,13 +9,12 @@ import (
 
 func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 	app.Use(middleware.CORS)
+	app.Use(middleware.Header)
 	app.Use(middleware.BasicAuth)
 
 	api := app.Group("/api")
 	api.GET("/path/*path", readPath)
 	api.GET("/download/*path", downloadPath)
-
-	api.POST("/private")
 
 	authentication(api.Group("/auth"))
 

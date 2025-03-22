@@ -6,9 +6,71 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
+func checkAuth(ctx *gin.Context) (bool, error) {
+	privdir := service.NewPrivDirService(nil)
+	dirs, err := privdir.Query()
+	if err != nil {
+		return true, nil
+	}
+
+	for _, dir := range dirs {
+		if !strings.HasPrefix(ctx.Request.URL.Path, dir.DirName) {
+			continue
+		}
+
+		auth := service.NewAuthService()
+		username, password, ok := ctx.Request.BasicAuth()
+		if !ok {
+			return false, nil
+		}
+
+		ok, err = auth.VerifyToken(username, password)
+		if err != nil {
+			return false, err
+		}
+
+		if !ok {
+			return false, nil
+		}
+
+		var acc *service.Account
+		acc, err = auth.Read(username)
+		if err != nil {
+			return false, err
+		}
+
+		var path *service.PrivDir
+		privdir = service.NewPrivDirService(acc)
+		path, err = privdir.Read(dir.DirName)
+		if err != nil {
+			return false, err
+		}
+
+		if path == dir {
+			return true, nil
+		}
+
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func readPath(ctx *gin.Context) {
+	ok, err := checkAuth(ctx)
+	if err != nil {
+		ctx.Status(401)
+		return
+	}
+
+	if !ok {
+		ctx.Status(401)
+		return
+	}
+
 	worker := service.NewWorkerService()
 	path := ctx.Param("path")
 
@@ -42,7 +104,7 @@ func readPath(ctx *gin.Context) {
 		var finfo os.FileInfo
 		finfo, err = entry.Info()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
 
@@ -65,6 +127,17 @@ func readPath(ctx *gin.Context) {
 }
 
 func downloadPath(ctx *gin.Context) {
+	ok, err := checkAuth(ctx)
+	if err != nil {
+		ctx.Status(401)
+		return
+	}
+
+	if !ok {
+		ctx.Status(401)
+		return
+	}
+
 	worker := service.NewWorkerService()
 	path := ctx.Param("path")
 	data, err := worker.Read(path)

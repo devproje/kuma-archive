@@ -8,35 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func login(ctx *gin.Context) {
-	auth := service.NewAuthService()
-	username := ctx.PostForm("username")
-	password := ctx.PostForm("password")
-
-	acc, err := auth.Read(username)
-	if err != nil {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "username or password not invalid",
-		})
-		return
-	}
-
-	ok, err := auth.Verify(username, password)
-	if err != nil || !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "username or password not invalid",
-		})
-		return
-	}
-
-	ctx.JSON(200, gin.H{
-		"ok":    1,
-		"token": auth.Token(acc.Username, acc.Password),
-	})
-}
-
 func readAcc(ctx *gin.Context) {
 	auth := service.NewAuthService()
 	username, password, ok := ctx.Request.BasicAuth()
@@ -115,6 +86,52 @@ func deleteAcc(ctx *gin.Context) {
 	if err = auth.Delete(username); err != nil {
 		ctx.Status(500)
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
+	}
+
+	ctx.Status(200)
+}
+
+func login(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+
+	acc, err := auth.Read(username)
+	if err != nil {
+		ctx.JSON(401, gin.H{
+			"ok":    0,
+			"errno": "username or password not invalid",
+		})
+		return
+	}
+
+	ok, err := auth.Verify(username, password)
+	if err != nil || !ok {
+		ctx.JSON(401, gin.H{
+			"ok":    0,
+			"errno": "username or password not invalid",
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"ok":    1,
+		"token": auth.Token(acc.Username, acc.Password),
+	})
+}
+
+func check(ctx *gin.Context) {
+	auth := service.NewAuthService()
+	username, password, ok := ctx.Request.BasicAuth()
+	if !ok {
+		ctx.Status(401)
+		return
+	}
+
+	ok, err := auth.VerifyToken(username, password)
+	if err != nil || !ok {
+		ctx.Status(401)
 		return
 	}
 

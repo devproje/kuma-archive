@@ -10,14 +10,21 @@ import (
 func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 	app.Use(middleware.CORS)
 	app.Use(middleware.Header)
-	app.Use(middleware.BasicAuth)
+	app.Use(middleware.WorkerRoute)
 
 	api := app.Group("/api")
 	api.GET("/path/*path", discoverPath)
 	api.GET("/download/*path", downloadPath)
 
+	w := api.Group("/worker")
+	{
+		w.GET("/discover/*path", discoverPath)
+		w.GET("/download/*path", downloadPath)
+	}
+
 	auth := api.Group("/auth")
 	{
+		auth.GET("/check", check)
 		auth.POST("/login", login)
 		auth.GET("/read", readAcc)
 		auth.PATCH("/update", updateAcc)

@@ -24,7 +24,7 @@ export interface DirEntry {
 export const usePath = create<PathState>((set) => ({
 	data: undefined,
 	update: async (path: string) => {
-		const res = await fetch(`/api/path/${path}`);
+		const res = await fetch(`/api/worker/discover/${path}`);
 		if (res.status !== 200 && res.status !== 304) {
 			set({ data: undefined });
 			return;

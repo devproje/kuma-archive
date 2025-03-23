@@ -10,13 +10,13 @@ function Settings() {
 
 	useEffect(() => {
 		if (auth.token === null) {
-			document.location.href = "/";
+			// document.location.href = "/";
 			return;
 		}
 
 		auth.checkToken(auth.token).then((ok) => {
 			if (!ok) {
-				document.location.href = "/";
+				// document.location.href = "/";
 				return;
 			}
 

@@ -27,6 +27,8 @@ export const useAuthStore = create<AuthState>()(
 			clearToken: () => set({ token: null }),
 			checkToken: async (token: string) => {
 				const res = await fetch("/api/auth/check", {
+					method: "GET",
+					mode: "same-origin",
 					headers: {
 						"Authorization": `Basic ${token}`
 					}

@@ -10,13 +10,13 @@ function Settings() {
 
 	useEffect(() => {
 		if (auth.token === null) {
-			// document.location.href = "/";
+			document.location.href = "/login";
 			return;
 		}
 
 		auth.checkToken(auth.token).then((ok) => {
 			if (!ok) {
-				// document.location.href = "/";
+				document.location.href = "/login";
 				return;
 			}
 
@@ -69,7 +69,7 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 					<span>If you change your password, you will need to log in again.</span>
 				</div>
 
-				<form className="box-col" id="pw-change">
+				<form className="box-col form" id="pw-change">
 					<PasswordInput placeholder="Password" ref={orRef} />
 					<PasswordInput placeholder="New Password" ref={pwRef} />
 					<PasswordInput placeholder="Check Password" ref={ckRef} />
@@ -122,7 +122,7 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 					<span>You can delete account. This action is irreversible. Please proceed with caution.</span>
 				</div>
 
-				<form className="box-col">
+				<form className="box-col form">
 					<label className="checkbox">
 						<input type="checkbox" onChange={ev => {
 							setRemove(ev.target.checked);

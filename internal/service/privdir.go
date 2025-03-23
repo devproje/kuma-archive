@@ -60,22 +60,22 @@ func NewPrivDirService(acc *Account) *PrivDirService {
 	}
 }
 
-func (sv *PrivDirService) Create(dirname string) error {
+func (sv *PrivDirService) Create(dirname string) (string, error) {
 	db, err := Open()
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer db.Close()
 
 	id := uuid.NewString()
 	stmt, err := db.Prepare("insert into PrivDir(id, dirname, owner) values (?, ?, ?);")
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(id, dirname, sv.acc.Username)
-	return nil
+	return id, nil
 }
 
 func (sv *PrivDirService) Read(dirname string) (*PrivDir, error) {

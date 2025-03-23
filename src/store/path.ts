@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 interface PathState {
 	data: PathResponse | undefined;
-	update(path: string): Promise<void>;
+	update(path: string, token: string | null): Promise<void>;
 }
 
 interface PathResponse {
@@ -23,8 +23,16 @@ export interface DirEntry {
 
 export const usePath = create<PathState>((set) => ({
 	data: undefined,
-	update: async (path: string) => {
-		const res = await fetch(`/api/worker/discover/${path}`);
+	update: async (path: string, token: string | null) => {
+		const res = await fetch(`/api/worker/discover/${path}`, {
+			headers: {
+				"Authorization": token === null ? "" : `Basic ${token}`
+			}
+		});
+		if (res.status === 401) {
+			document.location.href = "/login";
+		}
+
 		if (res.status !== 200 && res.status !== 304) {
 			set({ data: undefined });
 			return;

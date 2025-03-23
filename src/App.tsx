@@ -1,6 +1,6 @@
 import Login from "./components/login";
 import Logout from "./components/logout";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Settings from "./components/settings";
 import { useVersion } from "./store/version";
 import NotFound from "./components/notfound";
@@ -39,18 +39,20 @@ function Dashboard({ children }: { children: React.ReactNode }) {
 
 function View() {
 	const path = usePath();
+	const auth = useAuthStore();
 	const location = useLocation();
 	const [load, setLoad] = useState(false);
 
 	useEffect(() => {
 		if (!load) {
-			path.update(location.pathname.substring(1, location.pathname.length)).then(() => {
-				setLoad(true);
-			});
+			path.update(location.pathname.substring(1, location.pathname.length), auth.token)
+				.then(() => {
+					setLoad(true);
+				});
 
 			return;
 		}
-	}, [load, path, location]);
+	}, [auth, load, path, location]);
 
 	if (!load) {
 		return <></>;

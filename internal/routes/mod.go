@@ -31,6 +31,11 @@ func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 		auth.DELETE("/delete", deleteAcc)
 	}
 
+	privdir := api.Group("/privdir")
+	{
+		privdir.POST("/create", createDir)
+	}
+
 	api.GET("/version", func(ctx *gin.Context) {
 		ctx.String(200, "%s", version.String())
 	})

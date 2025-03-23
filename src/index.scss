@@ -32,12 +32,13 @@
 	--btn-success-focus: #1d7c33;
 	--btn-danger-focus: #a72532;
 
-	--font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+	--font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	--font-mono: "JetBrains Mono", monospace;
 }
 
 html, body {
 	margin: 0;
+	padding: 0;
 	width: 100vw;
 	height: 100vh;
 
@@ -60,7 +61,8 @@ html, body {
 	padding: 0;
 	box-sizing: border-box;
 
-	font-family: var(--font-family);
+	font-family: var(--font-family), sans-serif;
+	overflow-x: hidden;
 }
 
 h1 {

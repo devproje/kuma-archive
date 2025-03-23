@@ -28,7 +28,7 @@ func WorkerRoute(ctx *gin.Context) {
 	var target string
 	var matches = false
 	for _, dir := range dirs {
-		if !strings.HasSuffix(ctx.Request.URL.Path, dir.DirName) {
+		if !strings.Contains(ctx.Request.URL.Path, dir.DirName) {
 			continue
 		}
 

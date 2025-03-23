@@ -8,13 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func authentication(group *gin.RouterGroup) {
-	group.POST("/login", login)
-	group.GET("/read", readAcc)
-	group.PATCH("/update", updateAcc)
-	group.DELETE("/delete", deleteAcc)
-}
-
 func login(ctx *gin.Context) {
 	auth := service.NewAuthService()
 	username := ctx.PostForm("username")
@@ -77,7 +70,7 @@ func readAcc(ctx *gin.Context) {
 func updateAcc(ctx *gin.Context) {
 	auth := service.NewAuthService()
 	old := ctx.PostForm("password")
-	new := ctx.PostForm("new_password")
+	pass := ctx.PostForm("new_password")
 	username, _, ok := ctx.Request.BasicAuth()
 	if !ok {
 		ctx.Status(401)
@@ -90,7 +83,7 @@ func updateAcc(ctx *gin.Context) {
 		return
 	}
 
-	if err = auth.Update(username, new); err != nil {
+	if err = auth.Update(username, pass); err != nil {
 		ctx.Status(500)
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		return

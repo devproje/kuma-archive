@@ -17,6 +17,13 @@ type PrivDir struct {
 	Owner   string `json:"owner"`
 }
 
+type test interface {
+	Create()
+	Read()
+	Update()
+	Delete()
+}
+
 func init() {
 	db, err := Open()
 	if err != nil {
@@ -115,34 +122,38 @@ func (sv *PrivDirService) Delete(dirname string) error {
 	return nil
 }
 
-func (sv *PrivDirService) Query() ([]*PrivDir, error) {
+func (sv *PrivDirService) Query() []PrivDir {
 	db, err := Open()
 	if err != nil {
-		return nil, err
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
 	}
 	defer db.Close()
 
 	stmt, err := db.Prepare("select * from PrivDir;")
 	if err != nil {
-		return nil, err
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
 	if err != nil {
-		return nil, err
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
 	}
 	defer rows.Close()
 
-	var dirs []*PrivDir
+	var dirs []PrivDir
 	for rows.Next() {
 		var data PrivDir
 		if err = rows.Scan(&data.Id, &data.DirName, &data.Owner); err != nil {
-			return nil, err
+			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+			return nil
 		}
 
-		dirs = append(dirs, &data)
+		dirs = append(dirs, data)
 	}
 
-	return dirs, nil
+	return dirs
 }

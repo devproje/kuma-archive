@@ -22,18 +22,17 @@ func NewWorkerService() *WorkerService {
 }
 
 func (sv *WorkerService) Read(path string) (*DirEntry, error) {
-	fullpath := filepath.Join(config.INDEX_DIR, path)
-	info, err := os.Stat(fullpath)
+	fullPath := filepath.Join(config.INDEX_DIR, path)
+	info, err := os.Stat(fullPath)
 	if err != nil {
 		return nil, err
 	}
 
-	ret := DirEntry{
+	return &DirEntry{
 		Name:     info.Name(),
 		Date:     info.ModTime().Unix(),
-		Path:     fullpath,
+		Path:     fullPath,
 		FileSize: uint64(info.Size()),
 		IsDir:    info.IsDir(),
-	}
-	return &ret, nil
+	}, nil
 }

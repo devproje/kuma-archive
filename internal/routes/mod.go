@@ -13,10 +13,16 @@ func New(app *gin.Engine, version *service.Version, apiOnly bool) {
 	app.Use(middleware.BasicAuth)
 
 	api := app.Group("/api")
-	api.GET("/path/*path", readPath)
+	api.GET("/path/*path", discoverPath)
 	api.GET("/download/*path", downloadPath)
 
-	authentication(api.Group("/auth"))
+	auth := api.Group("/auth")
+	{
+		auth.POST("/login", login)
+		auth.GET("/read", readAcc)
+		auth.PATCH("/update", updateAcc)
+		auth.DELETE("/delete", deleteAcc)
+	}
 
 	api.GET("/version", func(ctx *gin.Context) {
 		ctx.String(200, "%s", version.String())

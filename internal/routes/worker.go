@@ -8,14 +8,23 @@ import (
 	"path/filepath"
 )
 
-func readPath(ctx *gin.Context) {
-	worker := service.NewWorkerService()
-	path := ctx.Param("path")
+func worker(path string) (*service.DirEntry, error) {
+	sv := service.NewWorkerService()
+	return sv.Read(path)
+}
 
-	data, err := worker.Read(path)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
-		ctx.Status(404)
+func discoverPath(ctx *gin.Context) {
+	path := ctx.Param("path")
+	data, err := worker(path)
+	if data == nil {
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
+		ctx.JSON(404, gin.H{
+			"ok":    0,
+			"errno": fmt.Errorf("path %s is not exist", path),
+		})
 		return
 	}
 
@@ -30,7 +39,8 @@ func readPath(ctx *gin.Context) {
 		return
 	}
 
-	raw, err := os.ReadDir(data.Path)
+	var raw []os.DirEntry
+	raw, err = os.ReadDir(data.Path)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		ctx.Status(500)
@@ -65,17 +75,25 @@ func readPath(ctx *gin.Context) {
 }
 
 func downloadPath(ctx *gin.Context) {
-	worker := service.NewWorkerService()
 	path := ctx.Param("path")
-	data, err := worker.Read(path)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
-		ctx.Status(404)
+	data, err := worker(path)
+	if data == nil {
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
+		ctx.JSON(404, gin.H{
+			"ok":    0,
+			"errno": fmt.Errorf("path %s is not exist", path),
+		})
 		return
 	}
 
 	if data.IsDir {
-		ctx.String(400, "current path is not file")
+		ctx.JSON(404, gin.H{
+			"ok":    0,
+			"errno": "file is not exist",
+		})
 		return
 	}
 

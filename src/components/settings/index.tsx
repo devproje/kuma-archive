@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AuthState, useAuthStore } from "../../store/auth";
+import { useAuthStore } from "../../store/auth";
 
 import "./settings.scss";
 import { DynamicIcon } from "lucide-react/dynamic";
@@ -33,26 +33,16 @@ function Settings() {
 	return (
 		<div className="ka-settings">
 			<h2 className="ka-title">General</h2>
-			<AccountSetting auth={auth} />
+			<AccountSetting />
 
-			 <h2 className="ka-title">Private Directory</h2>
-			 <SettingBox>
-				 {/* TODO: create private dir panel */}
-				 <></>
-			 </SettingBox>
+			<h2 className="ka-title">Private Directory</h2>
+			<PrivateDirectory />
 		</div>
 	);
 }
 
-function SettingBox({ children }: { children: React.ReactNode }) {
-	return (
-		<div className="setting-box">
-			{children}
-		</div>
-	);
-}
-
-function AccountSetting({ auth }: { auth: AuthState }) {
+function AccountSetting() {
+	const auth = useAuthStore();
 	const orRef = useRef<HTMLInputElement>(null);
 	const pwRef = useRef<HTMLInputElement>(null);
 	const ckRef = useRef<HTMLInputElement>(null);
@@ -64,74 +54,69 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 			<h4>Account Setting</h4>
 			<span>You can modify your account. This is a sensitive option. Please reconsider if you want to change your account information.</span>
 			<hr className="line" />
+			{/* TODO: split to component */}
 			<div className="box-row">
 				<div className="box-col">
 					<h6>Change Password</h6>
 					<span>If you change your password, you will need to log in again.</span>
 				</div>
 
-				<form className="box-col form" id="pw-change">
+				<form className="box-col form" id="pw-change" onSubmit={ev => {
+					ev.preventDefault();
+					const origin = orRef.current?.value;
+					const password = pwRef.current?.value;
+					const check = ckRef.current?.value;
+
+					if (!origin || !password || !check) {
+						return;
+					}
+
+					if (origin === "" || password === "" || check === "") {
+						alert("You must need to write all inputs");
+						return;
+					}
+
+					if (password !== check) {
+						alert("New password is not matches!");
+						return;
+					}
+
+					const form = new URLSearchParams();
+					form.append("password", origin);
+					form.append("new_password", password);
+
+					fetch("/api/auth/update", {
+						body: form,
+						method: "PATCH",
+						headers: {
+							"Authorization": `Basic ${auth.token}`
+						}
+					}).then((res) => {
+						if (res.status !== 200) {
+							alert(`${res.status} ${res.statusText}`);
+							return;
+						}
+
+						alert("password changed!");
+						document.location.href = "/logout";
+					});
+				}}>
 					<PasswordInput placeholder="Password" ref={orRef} />
 					<PasswordInput placeholder="New Password" ref={pwRef} />
 					<PasswordInput placeholder="Check Password" ref={ckRef} />
 
-					<button type="submit" className="danger" onClick={ev => {
-						ev.preventDefault();
-						const origin = orRef.current?.value;
-						const password = pwRef.current?.value;
-						const check = ckRef.current?.value;
-
-						if (!origin || !password || !check) {
-							return;
-						}
-
-						if (origin === "" || password === "" || check === "") {
-							alert("You must need to write all inputs");
-							return;
-						}
-
-						if (password !== check) {
-							alert("New password is not matches!");
-							return;
-						}
-
-						const form = new URLSearchParams();
-						form.append("password", origin);
-						form.append("new_password", password);
-
-						fetch("/api/auth/update", {
-							body: form,
-							method: "PATCH",
-							headers: {
-								"Authorization": `Basic ${auth.token}`
-							}
-						}).then((res) => {
-							if (res.status !== 200) {
-								alert(`${res.status} ${res.statusText}`);
-								return;
-							}
-
-							alert("password changed!");
-							document.location.href = "/logout";
-						});
-					}}>Change Password</button>
+					<button type="submit" className="danger">Change Password</button>
 				</form>
 			</div>
+
+			{/* TODO: split to component */}
 			<div className="box-row">
 				<div className="box-col">
 					<h6>Delete Account</h6>
 					<span>You can delete account. This action is irreversible. Please proceed with caution.</span>
 				</div>
 
-				<form className="box-col form">
-					<label className="checkbox">
-						<input type="checkbox" onChange={ev => {
-							setRemove(ev.target.checked);
-						}} />
-						<span>I agree to remove my account.</span>
-					</label>
-					
-					<button type="submit" className="danger" disabled={!remove} onClick={ev => {
+				<form className="box-col form" onSubmit={ev => {
 						ev.preventDefault();
 
 						fetch("/api/auth/delete", {
@@ -148,9 +133,52 @@ function AccountSetting({ auth }: { auth: AuthState }) {
 							alert("Your account has been deactivated and removed");
 							document.location.href = "/logout";
 						});
-					}}>Remove Account</button>
+					}}>
+					<label className="checkbox">
+						<input type="checkbox" onChange={ev => {
+							setRemove(ev.target.checked);
+						}} />
+						<span>I agree to remove my account.</span>
+					</label>
+					
+					<button type="submit" className="danger" disabled={!remove}>Remove Account</button>
 				</form>
 			</div>
+		</SettingBox>
+	);
+}
+
+function PrivateDirectory() {
+	const pathRef = useRef<HTMLInputElement>(null);
+	const [disabled, setDisabled] = useState(true);
+
+	return (
+		<SettingBox>
+			<h4>Directory Management</h4>
+			<span></span>
+			<hr />
+
+			{/* TODO: split to component */}
+			<div className="box-row">
+				<div className="box-col">
+					<h6>Add Directory</h6>
+					<span>You can add private directory here.</span>
+				</div>
+
+				<form className="box-col form" onSubmit={ev => {
+						ev.preventDefault();
+					}}>
+					<input type="text" placeholder="Directory Path" ref={pathRef} required onChange={ev => {
+						setDisabled(ev.target.value === "");
+					}} />
+					<button type="submit" className="success" disabled={disabled}>Add Directory</button>
+				</form>
+			</div>
+
+			{/* <div className="ka-privdir">
+				<div className="dir-head"></div>
+				<div className="dir-body"></div>
+			</div> */}
 		</SettingBox>
 	);
 }
@@ -167,6 +195,14 @@ function PasswordInput({ placeholder, ref }: { placeholder: string; ref: React.R
 			}}>
 				<DynamicIcon name={show ? "eye-off" : "eye"} size={17} />
 			</a>
+		</div>
+	);
+}
+
+function SettingBox({ children }: { children: React.ReactNode }) {
+	return (
+		<div className="setting-box">
+			{children}
 		</div>
 	);
 }

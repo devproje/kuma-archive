@@ -43,65 +43,43 @@ func WorkerRoute(ctx *gin.Context) {
 
 	username, password, ok := ctx.Request.BasicAuth()
 	if !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
-		ctx.Abort()
+		ctx.AbortWithStatus(401)
 		return
 	}
 
 	ok, err = auth.VerifyToken(username, password)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
-		ctx.Abort()
+
+		ctx.AbortWithStatus(401)
+		return
+	}
+
+	if !ok {
+		ctx.AbortWithStatus(401)
 		return
 	}
 
 	var acc *service.Account
 	acc, err = auth.Read(username)
 	if err != nil {
-		ctx.JSON(500, gin.H{
-			"ok":    0,
-			"errno": "Internal Server Error",
-		})
+		_, _ = fmt.Fprintln(os.Stderr, err)
 
-		ctx.Abort()
+		ctx.AbortWithStatus(500)
 		return
 	}
 
 	privdir = service.NewPrivDirService(acc)
-	if !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
-
-		ctx.Abort()
-		return
-	}
 
 	var d *service.PrivDir
 	d, err = privdir.Read(target)
 	if err != nil {
-		ctx.JSON(500, gin.H{
-			"ok":    0,
-			"errno": "Internal Server Error",
-		})
-		ctx.Abort()
+		ctx.AbortWithStatus(500)
 		return
 	}
 
 	if d == nil {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
-		ctx.Abort()
+		ctx.AbortWithStatus(401)
 		return
 	}
 

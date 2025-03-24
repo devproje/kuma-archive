@@ -82,18 +82,12 @@ func downloadPath(ctx *gin.Context) {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
 
-		ctx.JSON(404, gin.H{
-			"ok":    0,
-			"errno": fmt.Errorf("path %s is not exist", path),
-		})
+		ctx.String(404, fmt.Sprintf("path '%s' is not exist", path))
 		return
 	}
 
 	if data.IsDir {
-		ctx.JSON(404, gin.H{
-			"ok":    0,
-			"errno": "file is not exist",
-		})
+		ctx.String(404, fmt.Sprintf("path '%s' is directory, you cannot download directory", path))
 		return
 	}
 

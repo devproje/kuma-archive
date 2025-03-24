@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"git.wh64.net/devproje/kuma-archive/internal/util"
 	"github.com/google/uuid"
 	"os"
 	"strings"
@@ -25,7 +26,7 @@ type test interface {
 }
 
 func init() {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
@@ -61,7 +62,7 @@ func NewPrivDirService(acc *Account) *PrivDirService {
 }
 
 func (sv *PrivDirService) Create(dirname string) (string, error) {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return "", err
 	}
@@ -79,7 +80,7 @@ func (sv *PrivDirService) Create(dirname string) (string, error) {
 }
 
 func (sv *PrivDirService) Read(dirname string) (*PrivDir, error) {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +103,7 @@ func (sv *PrivDirService) Read(dirname string) (*PrivDir, error) {
 }
 
 func (sv *PrivDirService) Delete(dirname string) error {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return err
 	}
@@ -123,7 +124,7 @@ func (sv *PrivDirService) Delete(dirname string) error {
 }
 
 func (sv *PrivDirService) Query() []PrivDir {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return nil
@@ -138,6 +139,42 @@ func (sv *PrivDirService) Query() []PrivDir {
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
+	}
+	defer rows.Close()
+
+	var dirs []PrivDir
+	for rows.Next() {
+		var data PrivDir
+		if err = rows.Scan(&data.Id, &data.DirName, &data.Owner); err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+			return nil
+		}
+
+		dirs = append(dirs, data)
+	}
+
+	return dirs
+}
+
+func (sv *PrivDirService) QueryUser() []PrivDir {
+	db, err := util.OpenDatabase()
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("select * from PrivDir where owner = ?;")
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
+		return nil
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(sv.acc.Username)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return nil

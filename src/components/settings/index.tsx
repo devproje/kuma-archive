@@ -35,10 +35,10 @@ function Settings() {
 			<h2 className="ka-title">General</h2>
 			<AccountSetting auth={auth} />
 
-			{/* <h2 className="ka-title">Private Directory</h2> */}
-			{/* <SettingBox> */}
-				{/* TODO: create private directory setting */}
-			{/* </SettingBox> */}
+			 <h2 className="ka-title">Private Directory</h2>
+			 <SettingBox>
+				 {/*<></>*/}
+			 </SettingBox>
 		</div>
 	);
 }

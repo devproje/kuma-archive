@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"git.wh64.net/devproje/kuma-archive/internal/util"
 	"os"
 	"strings"
 )
@@ -23,7 +24,7 @@ func NewAuthService() *AuthService {
 }
 
 func init() {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
@@ -50,7 +51,7 @@ func init() {
 }
 
 func (s *AuthService) Create(data *Account) error {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return err
 	}
@@ -71,7 +72,7 @@ func (s *AuthService) Create(data *Account) error {
 }
 
 func (s *AuthService) Read(username string) (*Account, error) {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (s *AuthService) Read(username string) (*Account, error) {
 	defer stmt.Close()
 
 	var account Account
-	if err := stmt.QueryRow(username).Scan(&account.Username, &account.Password, &account.Salt); err != nil {
+	if err = stmt.QueryRow(username).Scan(&account.Username, &account.Password, &account.Salt); err != nil {
 		return nil, err
 	}
 
@@ -92,7 +93,7 @@ func (s *AuthService) Read(username string) (*Account, error) {
 }
 
 func (s *AuthService) Update(username, password string) error {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return err
 	}
@@ -113,7 +114,7 @@ func (s *AuthService) Update(username, password string) error {
 }
 
 func (s *AuthService) Delete(username string) error {
-	db, err := Open()
+	db, err := util.OpenDatabase()
 	if err != nil {
 		return err
 	}

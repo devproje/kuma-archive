@@ -12,10 +12,7 @@ func createDir(ctx *gin.Context) {
 	auth := service.NewAuthService()
 	username, password, ok := ctx.Request.BasicAuth()
 	if !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
+		ctx.Status(401)
 		return
 	}
 
@@ -24,20 +21,15 @@ func createDir(ctx *gin.Context) {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
 
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "Unauthorized",
-		})
+		ctx.Status(401)
 		return
 	}
 
 	var acc *service.Account
 	acc, err = auth.Read(username)
 	if err != nil {
-		ctx.JSON(500, gin.H{
-			"ok":    0,
-			"errno": "Interval Server Error",
-		})
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 		return
 	}
 
@@ -46,10 +38,8 @@ func createDir(ctx *gin.Context) {
 
 	var id string
 	if id, err = privdir.Create(path); err != nil {
-		ctx.JSON(500, gin.H{
-			"ok":    0,
-			"errno": fmt.Sprintf("'%s' directory is already registered", path),
-		})
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 		return
 	}
 

@@ -18,17 +18,12 @@ func readAcc(ctx *gin.Context) {
 
 	ok, err := auth.VerifyToken(username, password)
 	if err != nil {
-		ctx.JSON(500, gin.H{
-			"ok":    0,
-			"errno": "internal server error!",
-		})
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 	}
 
 	if !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "unauthorized",
-		})
+		ctx.Status(401)
 		return
 	}
 
@@ -49,14 +44,18 @@ func updateAcc(ctx *gin.Context) {
 	}
 
 	ok, err := auth.Verify(username, old)
-	if err != nil || !ok {
+	if !ok {
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
 		ctx.Status(401)
 		return
 	}
 
 	if err = auth.Update(username, pass); err != nil {
-		ctx.Status(500)
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 		return
 	}
 
@@ -73,8 +72,8 @@ func deleteAcc(ctx *gin.Context) {
 
 	ok, err := auth.VerifyToken(username, password)
 	if err != nil {
-		ctx.Status(500)
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 		return
 	}
 
@@ -84,8 +83,8 @@ func deleteAcc(ctx *gin.Context) {
 	}
 
 	if err = auth.Delete(username); err != nil {
-		ctx.Status(500)
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(500)
 		return
 	}
 
@@ -99,19 +98,19 @@ func login(ctx *gin.Context) {
 
 	acc, err := auth.Read(username)
 	if err != nil {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "username or password not invalid",
-		})
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		ctx.Status(401)
 		return
 	}
 
-	ok, err := auth.Verify(username, password)
-	if err != nil || !ok {
-		ctx.JSON(401, gin.H{
-			"ok":    0,
-			"errno": "username or password not invalid",
-		})
+	var ok bool
+	ok, err = auth.Verify(username, password)
+	if !ok {
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
+		ctx.Status(401)
 		return
 	}
 
@@ -130,7 +129,11 @@ func check(ctx *gin.Context) {
 	}
 
 	ok, err := auth.VerifyToken(username, password)
-	if err != nil || !ok {
+	if !ok {
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+
 		ctx.Status(401)
 		return
 	}

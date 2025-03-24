@@ -1,4 +1,4 @@
-package service
+package util
 
 import (
 	"database/sql"
@@ -8,6 +8,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Open() (*sql.DB, error) {
+func OpenDatabase() (*sql.DB, error) {
 	return sql.Open("sqlite3", filepath.Join(config.ROOT_DIRECTORY, "data.db"))
 }

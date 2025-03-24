@@ -37,7 +37,8 @@ function Settings() {
 
 			 <h2 className="ka-title">Private Directory</h2>
 			 <SettingBox>
-				 {/*<></>*/}
+				 {/* TODO: create private dir panel */}
+				 <></>
 			 </SettingBox>
 		</div>
 	);

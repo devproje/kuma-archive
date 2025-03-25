@@ -1,5 +1,6 @@
 # kuma-archive
 - Simple file mirror server for Gin(go) + TypeScript + React.js
+- This project's origin is here [WSERVER Forgejo](https://git.wh64.net/devproje/kuma-archive).
 
 ## Alert
 - This project includes experimental features that are still under development. Use them at your own risk.
